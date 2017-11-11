@@ -17,7 +17,7 @@ return [
     // 应用命名空间
     'app_namespace'          => 'app',
     // 应用调试模式
-    'app_debug'              => false,
+    'app_debug'              => true,
     // 应用Trace
     'app_trace'              => false,
     // 应用模式状态
@@ -138,6 +138,10 @@ return [
         'taglib_begin' => '{',
         // 标签库标签结束标记
         'taglib_end'   => '}',
+        //使用内置标签
+        'taglib_build_in'     =>    'Cx,app\common\taglib\Tag',
+        // 更改视图路径
+        'view_base'    => __DIR__.'/../template/'
     ],
 
     // 视图输出字符串内容替换
