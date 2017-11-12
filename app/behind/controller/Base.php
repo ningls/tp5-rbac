@@ -1,8 +1,8 @@
 <?php
 namespace app\behind\controller;
-use \think\Controller;
+use \app\common\controller\Cbase;
 
-class Base extends Controller
+class Base extends Cbase
 {
 
 }

@@ -145,7 +145,13 @@ return [
     ],
 
     // 视图输出字符串内容替换
-    'view_replace_str'       => [],
+    'view_replace_str'       => [
+        '__CSS__'   => '/static/css',
+        '__JS__'     => '/static/js',
+        '__IMG__'    => '/static/img',
+        '__ASSETS__' => '/static/assets',
+        '__FONTS__'  => '/static/fonts',
+    ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
     'dispatch_error_tmpl'    => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
@@ -163,6 +169,12 @@ return [
     'show_error_msg'         => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
     'exception_handle'       => '',
+    // 自定义错误页面路径
+    'error_page'             => 'public/error',
+
+    'http_exception_template'=> [
+        500 => APP_PATH.'500.html',
+    ],
 
     // +----------------------------------------------------------------------
     // | 日志设置
