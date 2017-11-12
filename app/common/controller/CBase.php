@@ -6,29 +6,36 @@ use \app\common\exception\ErrorException;
 
 class CBase extends Controller
 {
-	protected $error_msg;
-	protected $error_page;
-	public function _initialize()
+	/**
+	* 验证码
+	*/
+	public function verify()
 	{
-		parent::_initialize();
-		$this->error_page = config('ERROR_PAGE')??'public/error';
-		if(!$this->checkConfig()) {
-			$this->assign('error_msg', $this->error_msg);
-		}
+		
+	}
+
+	/**
+	* 检查验证码
+	*/
+	public function checkVerify()
+	{
 
 	}
 
-	private function checkConfig()
+	/**
+	* 发送短信
+	*/
+	public function sendSMS()
 	{
-		$sql = 'show1 databases';
-		try{
-			Db::query($sql);
-			return true;
-		}
-		catch(\think\Exception $e) {
-			$this->error_msg = '数据库配置错误';
-			abort(500,'数据库配置错误!');
-			exit;
-		}
+		//发送短信
 	}
+
+	/**
+	* 检查短信
+	*/
+	public function checkSMS()
+	{
+
+	}
+
 }
