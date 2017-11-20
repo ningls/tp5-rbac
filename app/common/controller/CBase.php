@@ -6,6 +6,13 @@ use \app\common\exception\ErrorException;
 
 class CBase extends Controller
 {
+	private $error;
+	
+	public function __construct()
+	{
+		parent::__construct();
+
+	}
 	/**
 	* 验证码
 	*/
