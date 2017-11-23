@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keyword" content="">
+    <title>{$systen_name|default='管理'} - 后台</title>
+    
+</head>
+<body>
+
+<section id="container" class="">
+    <!--header start-->
+    <block name="menu">
+        <header class="header white-bg">
+            <div class="sidebar-toggle-box">
+                <div data-original-title="Toggle Navigation" data-placement="right" class="icon-reorder tooltips"></div>
+            </div>
+            <!--logo start-->
+            <a href="{:url('index/index')}" class="logo">AA<span>BB</span></a>
+            <!--logo end-->
+            <div class="horizontal-menu navbar-collapse collapse ">
+                <ul class="nav navbar-nav" style="font-size: 14px;">
+                    <volist name="__menu__['main']" id="item">
+                    <li class="{$item['style']}">
+                        <a href="{$item['url']|url}">
+                            <i class="fa fa-{$item['icon']|default='file'}"></i>
+                            <span>{$item['title']}</span>
+                        </a>
+                    </li>
+                    </volist>
+                </ul>
+            </div>
+            <div class="top-nav ">
+                <ul class="nav pull-right top-menu">
+                    <!--<li>
+                    <input type="text" class="form-control search" placeholder="Search"></li>-->
+                    <!-- user login dropdown start-->
+                    <if condition="UID">
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <img alt="" src="__IMG__/avatar1_small.jpg">
+                                <span class="username">{:session('user_auth.real_name')}</span>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu extended logout">
+                                <div class="log-arrow-up"></div>
+                                <li>
+                                    <a href="{:url('/')}" target="_blank">
+                                        <i class=" icon-suitcase"></i>前台首页</a>
+                                </li>
+                                <li>
+                                    <a href="{:url('worker/user/updatePassword')}">
+                                        <i class="icon-cog"></i>修改密码</a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="icon-bell-alt"></i>Notification</a>
+                                </li>
+                                <li>
+                                    <a href="{:url('worker/passport/logout')}">
+                                        <i class="icon-key"></i>注销</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </if>
+                    <!-- user login dropdown end --></ul>
+            </div>
+        </header>
+    <!--header end-->
+    </block>
+    <!--sidebar start-->
+    <block name="left">
+        <aside>
+            <div id="sidebar" class="nav-collapse ">
+                <!-- sidebar menu start-->
+                <ul class="sidebar-menu" id="nav-accordion">
+                    <volist name="__menu__['child']" id="nav">
+                        <li class="sub-menu">
+                            <a href="javascript:;"><i class="icon-laptop"></i><span>{$key}</span></a>
+                            <ul class="sub">
+                                <volist name="nav" id="item">
+                                    <li><a href="{$item.url|url}">{$item.title}</a></li>
+                                </volist>
+                            </ul>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+        </aside>
+    </block>
+
+
+        <!--sidebar end-->
+        <!--main content start-->
+        <section id="main-content">
+            <block name="body"></block>
+        </section>
+        <!--main content end-->
+        <!--footer start-->
+    <block name="footer">
+        <footer class="site-footer">
+            <div class="text-center">&copy; AABB
+                <a href="#" class="go-top">
+                    <i class="icon-angle-up"></i></a>
+            </div>
+        </footer>
+    </block>
+
+        <!--footer end-->
+    </div>
+
+</section>
+
+
+<script src="__JS__/jquery.js"></script>
+<script src="__JS__/bootstrap.min.js"></script>
+<script class="include" type="text/javascript" src="__JS__/jquery.dcjqaccordion.2.7.js"></script>
+<script src="__JS__/jquery.scrollTo.min.js"></script>
+<script src="__JS__/jquery.nicescroll.js" type="text/javascript"></script>
+<script src="__ASSETS__/layer/layer.js"></script>
+<script src="__JS__/respond.min.js"></script>
+<script type="text/javascript" src="__JS__/Validform_v5.3.2_min.js"></script>
+<!--common script for all pages-->
+<script type="text/javascript" src="__JS__/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="__JS__/webuploader/webuploader.custom.js"></script>
+
+<script type="text/javascript" src="__ASSETS__/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+
+<script src="__JS__/common-scripts.js"></script>
+<script src="__JS__/common.js"></script>
+<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script>
+    var $nav = $("#nav-accordion"), url;
+
+    /* 左边菜单高亮 */
+    url = window.location.pathname + window.location.search;
+    url = url.replace(/(\/(p)\/\d+)|(&p=\d+)|(\/(id)\/\d+)|(&id=\d+)|(\/(group)\/\d+)|(&group=\d+)/, "");
+
+    var obj = $nav.find("a[href='" + url + "']");
+
+    if(obj.attr('href') == url){
+        $.cookie('LEFT_URL', null);
+        $.cookie('LEFT_URL', url);
+        obj.parent().parent().parent().children("a").addClass("active");
+        obj.parent().addClass("active");
+    }else {
+        var cookie_url = $.cookie('LEFT_URL');
+        var obj2 = $nav.find("a[href='" + cookie_url + "']");
+        obj2.parent().parent().parent().children("a").addClass("active");
+        obj2.parent().addClass("active");
+    }
+
+</script>
+<block name="script"></block>
+</body>
+</html>
