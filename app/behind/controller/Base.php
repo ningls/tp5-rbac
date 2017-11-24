@@ -1,12 +1,25 @@
 <?php
 namespace app\behind\controller;
 use \app\common\controller\CBase;
+use \think\Request;
 use \think\Db;
 
 class Base extends CBase
 {
 	protected $error_msg;
-	protected $admin_data = []; 
+	protected $admin_data = [];
+
+	private $_admin_user;
+
+	private $_admin_pass;
+
+	private $_admin_name;
+
+	private $_admin_phone;
+
+	private $_api_open;
+
+	private $_prefix;
 	/**
 	* 检测是否已经含有表以便生成admin
 	*/
@@ -14,9 +27,10 @@ class Base extends CBase
 	{
 	    parent::_initialize();
 		$action = request()->action();
+		$this->_prefix = config('database.prefix');
 		if(in_array($action,['create_auth', 'auth_exists', 'create_admin', 'error_page'])) return false;
 		try{
-			Db::Query("show databases");
+			Db::Query("show tables");
 		}
 		catch(\PDOException $e){
 			exit('数据库配置错误或或数据不存在！');
@@ -28,16 +42,6 @@ class Base extends CBase
 			$this->redirect('base/create_admin');
 		}
 
-	}
-
-	/**
-	* 生成auth权限表
-	*/
-	final public function create_auth()
-	{
-		if($this->auth_exists()) {
-			$this->redirect('index/index');
-		}
 	}
 
 	/**
@@ -55,14 +59,55 @@ class Base extends CBase
 	}
 
 
-	//创建admin用户
-	final public function create_admin()
+	//rbac初始化
+	final public function create_admin(Request $request)
 	{
 		if($this->auth_exists()) {
 			$this->redirect('index/index');
 		}
-		return $this->fetch();
+        $this->create_auth();
+		if($request->isAjax()) {
+            $this->_admin_user = $request->param('admin_user','','htmlspecialchars');
+            $this->_admin_pass = $request->param('admin_pass','','htmlspecialchars');
+            $this->_admin_name = $request->param('admin_name','','htmlspecialchars');
+            $this->_admin_phone = $request->param('admin_user',0,'int');
+            $this->_api_open = $request->param('api_open',0,'int');
+        }
+        elseif ($request->isGet()) {
+            return $this->fetch();
+        }
+        else {
+		    return '请求错误！';
+        }
 	}
+
+
+    /**
+     * 生成auth权限表
+     */
+    private function create_auth()
+    {
+        $sql = preg_replace('/\[\[PREFIX\]\]/',$this->_prefix,file_get_contents('create_auth.sql'));
+        $res = Db::Query($sql);
+        dump($res);
+
+    }
+
+    /**
+     * 生成全局配置表
+     */
+    private function create_global()
+    {
+
+    }
+
+    /**
+     * 生成api权限控制表
+     */
+    private function create_api_auth()
+    {
+
+    }
 
 	//error_page
 	public function error_page()

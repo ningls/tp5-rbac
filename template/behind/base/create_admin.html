@@ -26,11 +26,11 @@
 			<form role="form" method="post">
 				<div class="form-group">
 					<label for="admin_user">管理员账号</label>
-					<input type="text" class="form-control" required id="admin_user" placeholder="管理员账号">
+					<input type="text" class="form-control" required id="admin_user" name="admin_user" placeholder="管理员账号">
 				</div>
 				<div class="form-group">
 					<label for="admin_pass">管理员密码</label>
-					<input type="password" class="form-control" required id="admin_pass" placeholder="管理员密码">
+					<input type="password" class="form-control" required id="admin_pass" name="admin_pass" placeholder="管理员密码">
 				</div>
 				<div class="form-group">
 					<label for="admin_pass2">重复密码</label>
@@ -38,16 +38,16 @@
 				</div>
 				<div class="form-group">
 					<label for="admin_name">管理员姓名</label>
-					<input type="text" class="form-control" required id="admin_name" placeholder="管理员姓名">
+					<input type="text" class="form-control" required id="admin_name" name="admin_name" placeholder="管理员姓名">
 				</div>
 				<div class="form-group">
 					<label for="admin_phone">管理员手机号</label>
-					<input type="number" required class="form-control" id="admin_phone" placeholder="管理员手机号">
+					<input type="number" required class="form-control" id="admin_phone" name="admin_phone" placeholder="管理员手机号">
 				</div>
 
 				<div class="checkbox">
 					<label>
-						<input type="checkbox" name="api"> 开启Api权限验证
+						<input type="checkbox" name="api_open" value="1"> 开启Api权限验证
 					</label>
 				</div>
 				<button type="submit" class="btn btn-info" style="float: right">提交</button>
