@@ -1,9 +1,9 @@
 <?php
 namespace app\behind\controller;
-use \app\common\controller\Cbase;
+use \app\common\controller\CBase;
 use \think\Db;
 
-class Base extends Cbase
+class Base extends CBase
 {
 	protected $error_msg;
 	protected $admin_data = []; 
@@ -12,13 +12,14 @@ class Base extends Cbase
 	*/
 	public function _initialize()
 	{
+	    parent::_initialize();
 		$action = request()->action();
 		if(in_array($action,['create_auth', 'auth_exists', 'create_admin', 'error_page'])) return false;
 		try{
-			Db::Query("show tables");
+			Db::Query("show databases");
 		}
 		catch(\PDOException $e){
-			exit('数据库配置错误');
+			exit('数据库配置错误或或数据不存在！');
 		}
 		catch(\think\Exception $e) {
 			exit('未配置数据库');
