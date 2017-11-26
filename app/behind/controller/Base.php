@@ -47,10 +47,10 @@ class Base extends CBase
 	/**
 	* 判断是否已存在权限表
 	*/
-	final protected function auth_exists()
+	private function auth_exists()
 	{
 		try {
-			Db::name('admin_user')->select();
+			return Db::name('admin_user')->select()?true:false;
 		} catch (\think\Exception $e) {
 			return false;
 		}
@@ -60,18 +60,31 @@ class Base extends CBase
 
 
 	//rbac初始化
-	final public function create_admin(Request $request)
+	final public  function create_admin(Request $request)
 	{
 		if($this->auth_exists()) {
 			$this->redirect('index/index');
 		}
-        $this->create_auth();
 		if($request->isAjax()) {
             $this->_admin_user = $request->param('admin_user','','htmlspecialchars');
             $this->_admin_pass = $request->param('admin_pass','','htmlspecialchars');
             $this->_admin_name = $request->param('admin_name','','htmlspecialchars');
             $this->_admin_phone = $request->param('admin_user',0,'int');
             $this->_api_open = $request->param('api_open',0,'int');
+            if(!$this->create_auth()) {
+            	return json(['code'=>-1,'msg'=>'无法创建数据表，请检查数据库权限']);
+            }
+            Db::name('admin_user')->insert([
+            	'admin_user' => $this->_admin_user,
+            	'admin_pass' => md5(md5($this->_admin_pass)),
+            	'admin_name' => $this->_admin_name,
+            	'admin_phone'=> $this->_admin_phone,
+            	'role_id'    => 1,
+            	'status'     => 0,
+            	'add_time'   => time()
+            ]);
+            return json(['code'=>0,'msg'=>'初始化成功!']);
+            
         }
         elseif ($request->isGet()) {
             return $this->fetch();
@@ -88,9 +101,15 @@ class Base extends CBase
     private function create_auth()
     {
         $sql = preg_replace('/\[\[PREFIX\]\]/',$this->_prefix,file_get_contents('create_auth.sql'));
-        $res = Db::Query($sql);
-        dump($res);
-
+        $sql = explode(';', $sql);
+        array_pop($sql);
+        try{
+        	$res = Db::batchQuery($sql);
+        }
+        catch(\think\Exception $e){
+        	return $false;
+        }
+        return true;
     }
 
     /**
