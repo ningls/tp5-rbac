@@ -7,7 +7,6 @@ use \think\Db;
 class Base extends CBase
 {
 	protected $error_msg;
-	protected $admin_data = [];
 
 	private $_admin_user;
 
