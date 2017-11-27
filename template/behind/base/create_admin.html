@@ -100,10 +100,18 @@
 					});
 				},
 				success:function(e) {
-					layer.msg('初始化成功，正在跳转...');
-					setTimeout(function(){
-						location.href="{:url('index/index')}";
-					},2000)
+					if(e.code != 0) {
+						layer.open({
+							content:e.msg,
+							scrollbar:false
+						})
+					}
+					else {
+						layer.msg('初始化成功，正在跳转...');
+						setTimeout(function(){
+							location.href="{:url('index/index')}";
+						},2000)
+					}	
 				}
 			})
 			return false;
