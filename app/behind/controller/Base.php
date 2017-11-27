@@ -64,7 +64,7 @@ class Base extends CBase
             	'admin_user' => $request->param('admin_user','','htmlspecialchars'),
             	'admin_pass' => md5(md5($request->param('admin_pass','','htmlspecialchars'))),
             	'admin_name' => $request->param('admin_name','','htmlspecialchars'),
-            	'admin_phone'=> $request->param('admin_user',0,'int'),
+            	'admin_phone'=> $request->param('admin_phone',0,'int'),
             	'role_id'    => 1,
             	'status'     => 0,
             	'add_time'   => time()
