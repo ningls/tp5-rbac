@@ -45,11 +45,6 @@
 					<input type="number" required class="form-control" id="admin_phone" name="admin_phone" placeholder="管理员手机号">
 				</div>
 
-				<div class="checkbox">
-					<label>
-						<input type="checkbox" name="api_open" value="1"> 开启Api权限验证
-					</label>
-				</div>
 				<button type="submit" class="btn btn-info" style="float: right">提交</button>
 			</form>
 
@@ -84,6 +79,34 @@
             if(res === false) {
 	            return false;
 			}
+			$.ajax({
+				type:"POST",
+				url:"{:url('base/create_admin')}",
+				dataType:"json",
+				data:{
+					admin_name:$('#admin_name').val(),
+					admin_pass:$('#admin_pass').val(),
+					admin_phone:$('#admin_phone').val(),
+					admin_user:$('#admin_user').val()
+				},
+				error:function(e){
+					layer.msg('请求错误');
+				},
+				beforeSend:function(e) {
+					layer.msg('初始化中..请稍后..',{
+						icon:16,
+						shade:0.01,
+						time:10000
+					});
+				},
+				success:function(e) {
+					layer.msg('初始化成功，正在跳转...');
+					setTimeout(function(){
+						location.href="{:url('index/index')}";
+					},2000)
+				}
+			})
+			return false;
 		})
 	}())
 </script>

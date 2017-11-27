@@ -8,16 +8,6 @@ class Base extends CBase
 {
 	protected $error_msg;
 
-	private $_admin_user;
-
-	private $_admin_pass;
-
-	private $_admin_name;
-
-	private $_admin_phone;
-
-	private $_api_open;
-
 	private $_prefix;
 	/**
 	* 检测是否已经含有表以便生成admin
@@ -40,7 +30,9 @@ class Base extends CBase
 		if(!$this->auth_exists()) {
 			$this->redirect('base/create_admin');
 		}
-
+		if(!$this->is_login()) {
+			$this->redirect('sign/login');
+		}
 	}
 
 	/**
@@ -65,23 +57,19 @@ class Base extends CBase
 			$this->redirect('index/index');
 		}
 		if($request->isAjax()) {
-            $this->_admin_user = $request->param('admin_user','','htmlspecialchars');
-            $this->_admin_pass = $request->param('admin_pass','','htmlspecialchars');
-            $this->_admin_name = $request->param('admin_name','','htmlspecialchars');
-            $this->_admin_phone = $request->param('admin_user',0,'int');
-            $this->_api_open = $request->param('api_open',0,'int');
             if(!$this->create_auth()) {
             	return json(['code'=>-1,'msg'=>'无法创建数据表，请检查数据库权限']);
             }
-            Db::name('admin_user')->insert([
-            	'admin_user' => $this->_admin_user,
-            	'admin_pass' => md5(md5($this->_admin_pass)),
-            	'admin_name' => $this->_admin_name,
-            	'admin_phone'=> $this->_admin_phone,
+            $id = Db::name('admin_user')->insert([
+            	'admin_user' => $request->param('admin_user','','htmlspecialchars'),
+            	'admin_pass' => md5(md5($request->param('admin_pass','','htmlspecialchars'))),
+            	'admin_name' => $request->param('admin_name','','htmlspecialchars'),
+            	'admin_phone'=> $request->param('admin_user',0,'int'),
             	'role_id'    => 1,
             	'status'     => 0,
             	'add_time'   => time()
             ]);
+            session('data',['id'=>$id,'role_id'=>1]);
             return json(['code'=>0,'msg'=>'初始化成功!']);
             
         }
@@ -99,6 +87,9 @@ class Base extends CBase
      */
     private function create_auth()
     {
+    	if(!is_file('./create_auth.sql')) {
+    		exit('文件 create_auth.sql 不存在！');
+    	}
         $sql = preg_replace('/\[\[PREFIX\]\]/',$this->_prefix,file_get_contents('create_auth.sql'));
         $sql = explode(';', $sql);
         array_pop($sql);
@@ -132,6 +123,13 @@ class Base extends CBase
 	{
 		$this->assign('error_msg', $this->error_msg);
 		return $this->fetch();
+	}
+
+	/**
+	* 是否登录
+	*/
+	protected function is_login(){
+		return session('data')?true:false;
 	}
 
 }
