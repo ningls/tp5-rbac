@@ -78,7 +78,7 @@ class Base extends CBase
             	'status'     => 0,
             	'add_time'   => time()
             ]);
-            session('data',['id'=>$id,'role_id'=>1]);
+            session('data',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1]);
             return json(['code'=>0,'msg'=>'初始化成功!']);
             
         }
