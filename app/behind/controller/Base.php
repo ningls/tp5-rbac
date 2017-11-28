@@ -8,6 +8,8 @@ class Base extends CBase
 {
 	protected $error_msg;
 
+	protected $global_setting;
+
 	private $_prefix;
 	/**
 	* 检测是否已经含有表以便生成admin
@@ -30,6 +32,15 @@ class Base extends CBase
 		if(!$this->auth_exists()) {
 			$this->redirect('base/create_admin');
 		}
+		//获取全局设置
+		$setting = Db::name('global_setting')->select();
+		foreach($setting as $v) {
+		    $this->global_setting[$v['key']] = $v['value'];
+        }
+		//sign控制器时跳出
+        if(strtolower(request()->controller()) === 'sign') {
+            return false;
+        }
 		if(!$this->is_login()) {
 			$this->redirect('sign/login');
 		}
@@ -45,8 +56,6 @@ class Base extends CBase
 		} catch (\think\Exception $e) {
 			return false;
 		}
-		return true;
-
 	}
 
 
@@ -94,12 +103,11 @@ class Base extends CBase
         $sql = explode(';', $sql);
         array_pop($sql);
         try{
-        	$res = Db::batchQuery($sql);
+        	return  Db::batchQuery($sql);
         }
         catch(\think\Exception $e){
-        	return $false;
+        	return false;
         }
-        return true;
     }
 
     /**
