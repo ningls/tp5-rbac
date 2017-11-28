@@ -73,13 +73,14 @@ DROP TABLE IF EXISTS [[PREFIX]]global_setting;
 CREATE TABLE [[PREFIX]]global_setting(
 	`id` tinyint(3) not null PRIMARY KEY auto_increment comment '主键',
 	`key` varchar(50) not null default '' comment '配置key',
-    `value` varchar(200) not null default '' comment '配置值',
-    `comment` varchar(200) not null default '' comment '配置说明'
+  `value` varchar(200) not null default '' comment '配置值',
+  `comment` varchar(200) not null default '' comment '配置说明'
 )charset = 'utf8' engine = innodb comment = '全局设置表';
 
 /* 插入全局表初始数据 */
 INSERT INTO [[PREFIX]]global_setting(`key`,`value`,`comment`) values
 ('log_open',1,'是否开启日志，1-是，0-否'),
 ('sms_verify',0,'后台登录短信验证，1-是，0-否'),
+('sms_expire',3000,'短信验证码过期时间'),
 ('page_limit',15,'后台数据每页页数'),
 ('api_auth_open',0,'是否开启api权限验证，1-是，0-否');
