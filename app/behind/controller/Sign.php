@@ -7,6 +7,7 @@ use think\Request;
 
 class Sign extends Base
 {
+    protected $admin_user;
 	/**
 	* 登录
 	*/
@@ -35,7 +36,7 @@ class Sign extends Base
                 $admin_user = $request->post('admin_user','','htmlspecialchars');
                 $admin_pass = $request->post('admin_pass','','htmlspecialchars');
                 $verify = $request->post('verify','','htmlspecialchars');
-                if($code = $this->checkVerify()) {
+                if($code = $this->checkVerify($verify)) {
                     goto login_over;
                 }
                 if(($code = $this->check_pass($admin_user,$admin_pass)) == 9005) {
@@ -46,6 +47,7 @@ class Sign extends Base
                     goto login_over;
                 }
             }
+            session('data',$this->admin_user);
             login_over:
             return json(['code'=>$code,ErrorCode::error[$code]]);
         }
@@ -63,7 +65,8 @@ class Sign extends Base
      */
 	protected function find_admin_by_phone($phone)
     {
-        return Db::name('admin_user')->where(['admin_phone'=>$phone])->find()?0:9004;
+        $this->admin_user =  Db::name('admin_user')->where(['admin_phone'=>$phone])->find();
+        return $this->admin_user?0:9004;
     }
 
     /**
@@ -75,8 +78,17 @@ class Sign extends Base
     {
         $condition['admin_user'] = $admin_user;
         $condition['admin_pass'] = md5(md5($admin_pass));
-        $status = Db::name('admin_user')->where($condition)->value('status');
+        $this->admin_user = Db::name('admin_user')->where($condition)->find();
+        $status = $this->admin_user['status'];
         return $status?$status:9005;
     }
 
+    /**
+     * 登出
+     */
+    public function logout()
+    {
+        session('data',null);
+        $this->redirect('login');
+    }
 }
