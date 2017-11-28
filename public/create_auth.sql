@@ -9,7 +9,9 @@ CREATE TABLE [[PREFIX]]admin_user(
     `role_id` tinyint(3) unsigned not null default 0 comment '角色id',
     `last_login` int(10) unsigned not null default 0 comment '上次登录时间',
     `status` tinyint(2) unsigned not null default 0 comment '状态 0-正常，1-禁用，9-删除',
-    `add_time` int(10) unsigned not null default 0 comment '增加时间'
+    `add_time` int(10) unsigned not null default 0 comment '增加时间',
+    unique `admin_user`(`admin_user`),
+    unique `admin_phone`(`admin_phone`)
 )charset = 'utf8' engine = innodb comment = '管理用户表';
 
 /* 管理用户表 */
@@ -20,7 +22,9 @@ CREATE TABLE [[PREFIX]]admin_role(
     `role_id` tinyint(3) unsigned not null default 0 comment '角色id',
     `parent_id` tinyint(3) unsigned not null default 0 comment '父id',
     `status` tinyint(2) unsigned not null default 0 comment '状态 0-正常，1-禁用，9-删除',
-    `add_time` int(10) unsigned not null default 0 comment '增加时间'
+    `add_time` int(10) unsigned not null default 0 comment '增加时间',
+    key `role`(`role_id`),
+    key `add_time`(`add_time`)
 )charset = 'utf8' engine = innodb comment = '管理用户表';
 
 /* 添加超级管理员 */
@@ -35,7 +39,12 @@ CREATE TABLE [[PREFIX]]admin_menu(
     `parent_id` tinyint(3) unsigned not null default 0 comment '父id',
     `is_left_menu` tinyint(3) unsigned not null default 0 comment '是否左侧菜单1-是，0-否',
     `status` tinyint(3) unsigned not null default 0 comment '状态 0-正常，1-禁用,8-测试,9-删除',
-    `add_at` int(10) unsigned not null default 0 comment '添加时间'
+    `sort` tinyint(3) unsigned not null default 0 comment '排序',
+    `add_at` int(10) unsigned not null default 0 comment '添加时间',
+    key `status`(`status`),
+    key `sort`('sort'),
+    key `left`(`is_left_menu`),
+    key `parent`(`parent_id`)
 )charset = 'utf8' engine = innodb comment = '菜单表';
 
 /* 权限表 */
@@ -44,7 +53,8 @@ CREATE TABLE [[PREFIX]]admin_role_auth(
     `id` tinyint(3) not null PRIMARY KEY auto_increment comment '主键',
 	`role_id` tinyint(3) unsigned not null default 0 comment '角色id',
 	`role_auth` varchar(5000) not null default '' comment '角色规则-json格式',
-    `update_at` int(10) unsigned not null default 0 comment '修改时间'
+    `update_at` int(10) unsigned not null default 0 comment '修改时间',
+    key `role`(`role_id`)
 )charset = 'utf8' engine = innodb comment = '权限表';
 
 /* 行为日志表 */
@@ -55,7 +65,9 @@ CREATE TABLE [[PREFIX]]admin_log(
     `view_name` varchar(50) not null default '' comment '访问名称',
     `view_url` varchar(200) not null default '' comment '访问地址',
     `view_at` int(10) unsigned not null default 0 comment '访问时间',
-    `view_ip` char(20) not null default '' comment '访问ip'
+    `view_ip` char(20) not null default '' comment '访问ip',
+    key `admin_id`(`admin_id`),
+    key `view_at`(`view_at`)
 )charset = 'utf8' engine = innodb comment = '后台日志表';
 
 /* 短信验证码表 */
@@ -65,7 +77,8 @@ CREATE TABLE [[PREFIX]]sms_code(
     `code` mediumint(8) unsigned not null default 0 comment '验证码code，最多8位',
     `phone` varchar(15) not null default '' comment '手机号',
     `expire_time` int(10) unsigned not null default 0 comment '过期时间',
-    `status` tinyint(3) unsigned not null default 0 comment '状态，0-未使用，1已使用'
+    `status` tinyint(3) unsigned not null default 0 comment '状态，0-未使用，1已使用',
+    key `phone`(`phone`)
 )charset = 'utf8' engine = innodb comment = '短信验证码表';
 
 /* 全局设置表 */
@@ -74,7 +87,8 @@ CREATE TABLE [[PREFIX]]global_setting(
 	`id` tinyint(3) not null PRIMARY KEY auto_increment comment '主键',
 	`key` varchar(50) not null default '' comment '配置key',
   `value` varchar(200) not null default '' comment '配置值',
-  `comment` varchar(200) not null default '' comment '配置说明'
+  `comment` varchar(200) not null default '' comment '配置说明',
+  key `key`(`key`)
 )charset = 'utf8' engine = innodb comment = '全局设置表';
 
 /* 插入全局表初始数据 */

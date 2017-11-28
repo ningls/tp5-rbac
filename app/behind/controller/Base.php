@@ -3,11 +3,13 @@ namespace app\behind\controller;
 use \app\common\controller\CBase;
 use \think\Request;
 use \think\Db;
+use \app\common\logic\CacheKey;
 
 class Base extends CBase
 {
 	protected $error_msg;
 
+	//全局设置
 	protected $global_setting;
 
 	private $_prefix;
@@ -44,6 +46,8 @@ class Base extends CBase
 		if(!$this->is_login()) {
 			$this->redirect('sign/login');
 		}
+		//设置菜单
+		$this->set_menu();
 	}
 
 	/**
@@ -110,19 +114,21 @@ class Base extends CBase
         }
     }
 
-    /**
-     * 生成全局配置表
-     */
-    private function create_global()
-    {
-
-    }
-
+  
     /**
      * 生成api权限控制表
      */
-    private function create_api_auth()
+    protected function set_menu()
     {
+    	//top_menu
+    	//调试模式可见禁用菜单
+    	if(APP_DEBUG) {
+    		$condition['status'] = ['in',[0,1]];
+    	}
+    	else {
+    		$condition['status'] = 0;
+    	}
+    	$condition['parent_id'] = 0;
 
     }
 
