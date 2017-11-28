@@ -28,21 +28,22 @@ class CBase extends Controller
 	*/
 	public function sendSMS()
 	{
-		//发送短信
-	}
-
-	/**
-	* 检查短信
-	*/
-	public function checkSMS()
-	{
 
 	}
 
-	final public function conf()
+    /**
+     * 检查短信
+     * @param $phone
+     * @param $code
+     * @param $expire
+     */
+	protected function checkSMS($phone,$code,$expire)
 	{
-		return $this->fetch();
-	} 
-
+        $condition['expire_time'] = ['elt', time() + $expire];
+        $condition['phone'] = $phone;
+        $condition['code'] = $code;
+        $condition['status'] = 0;
+        return Db::name('sms_code')->where($condition)->update(['status'=>1])?0:9003;
+	}
 
 }
