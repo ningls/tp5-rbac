@@ -17,18 +17,24 @@ class CBase extends Controller
 
 	/**
 	* 检查验证码
+	* @param $verify
+	* @return int errorcode
 	*/
-	public function checkVerify()
+	public function checkVerify($verify)
 	{
-
+		return 0;
 	}
 
 	/**
 	* 发送短信
+	* @param int $phone
+	* @param str $sign
+	* @param str $templete_id
+	* @return int errorcode
 	*/
-	public function sendSMS()
+	public function sendSMS($phone,$sign = '',$templete_id = '')
 	{
-
+		return 0;
 	}
 
     /**
