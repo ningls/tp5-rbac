@@ -16,8 +16,9 @@ class Base extends CBase
 	/**
 	* 检测是否已经含有表以便生成admin
 	*/
-	public function _initialize()
+	public function _initialize():bool
 	{
+	    return false;
 	    parent::_initialize();
 		$action = request()->action();
 		$this->_prefix = config('database.prefix');
@@ -48,12 +49,13 @@ class Base extends CBase
 		}
 		//设置菜单
 		$this->set_menu();
+
 	}
 
 	/**
 	* 判断是否已存在权限表
 	*/
-	private function auth_exists()
+	private function auth_exists():bool
 	{
 		try {
 			return Db::name('admin_user')->select()?true:false;
@@ -64,7 +66,7 @@ class Base extends CBase
 
 
 	//rbac初始化
-	final public  function create_admin(Request $request)
+	final public  function create_admin(Request $request):mixed
 	{
 		if($this->auth_exists()) {
 			$this->redirect('index/index');
@@ -98,7 +100,7 @@ class Base extends CBase
     /**
      * 生成auth权限表
      */
-    private function create_auth()
+    private function create_auth():bool
     {
     	if(!is_file('./create_auth.sql')) {
     		exit('文件 create_auth.sql 不存在！');
@@ -122,7 +124,7 @@ class Base extends CBase
     {
     	//top_menu
     	//调试模式可见禁用菜单
-    	if(APP_DEBUG) {
+    	if(config('app_debug')) {
     		$condition['status'] = ['in',[0,1]];
     	}
     	else {

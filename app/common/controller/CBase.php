@@ -2,12 +2,20 @@
 namespace app\common\controller;
 use \think\Controller;
 use \think\Db;
-use \app\common\exception\ErrorException;
 
 class CBase extends Controller
 {
-		
-	/**
+    /**
+     * @return bool
+     */
+    public function _initialize():bool
+    {
+       if(PHP_VERSION < 7) exit('该框架适用于php7以上版本');
+
+       return true;
+    }
+
+    /**
 	* 验证码
 	*/
 	public function verify()
@@ -20,7 +28,7 @@ class CBase extends Controller
 	* @param $verify
 	* @return int errorcode
 	*/
-	public function checkVerify($verify)
+	public function checkVerify(string $verify):int
 	{
 		return 0;
 	}
@@ -28,11 +36,11 @@ class CBase extends Controller
 	/**
 	* 发送短信
 	* @param int $phone
-	* @param str $sign
-	* @param str $templete_id
-	* @return int errorcode
+	* @param string $sign
+	* @param string $templete_id
+	* @return int mixed
 	*/
-	public function sendSMS($phone,$sign = '',$templete_id = '')
+	public function sendSMS(int $phone,string $sign = '',string $templete_id = '')
 	{
 		return 0;
 	}
@@ -42,8 +50,9 @@ class CBase extends Controller
      * @param $phone
      * @param $code
      * @param $expire
+     * @return int
      */
-	protected function checkSMS($phone,$code,$expire)
+	protected function checkSMS(int $phone,integer $code,int $expire):int
 	{
         $condition['expire_time'] = ['elt', time() + $expire];
         $condition['phone'] = $phone;

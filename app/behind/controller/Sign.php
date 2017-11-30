@@ -14,7 +14,6 @@ class Sign extends Base
 	public function login(Request $request)
 	{
 		if($request->isAjax()) {
-		    $code = 0;
 		    //短信验证码登录
             if($this->global_setting['sms_verify']) {
                 $phone = $request->post('phone',0,'int');
@@ -63,7 +62,7 @@ class Sign extends Base
      * @param $phone
      * @return int errorcode
      */
-	protected function find_admin_by_phone($phone)
+	protected function find_admin_by_phone(int $phone):int
     {
         $this->admin_user =  Db::name('admin_user')->where(['admin_phone'=>$phone])->find();
         return $this->admin_user?0:9004;
@@ -72,9 +71,9 @@ class Sign extends Base
     /**
      * @param $admin_user
      * @param $admin_pass
-     * @return int|mixed
+     * @return int
      */
-    protected function check_pass($admin_user,$admin_pass)
+    protected function check_pass(string $admin_user,string $admin_pass):int
     {
         $condition['admin_user'] = $admin_user;
         $condition['admin_pass'] = md5(md5($admin_pass));

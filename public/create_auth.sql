@@ -37,7 +37,6 @@ CREATE TABLE [[PREFIX]]admin_menu(
     `name` varchar(50) not null default '' comment '菜单名称',
     `url` varchar(200) not null default '' comment '控制地址',
     `parent_id` tinyint(3) unsigned not null default 0 comment '父id',
-    `is_left_menu` tinyint(3) unsigned not null default 0 comment '是否左侧菜单1-是，0-否',
     `status` tinyint(3) unsigned not null default 0 comment '状态 0-正常，1-禁用,8-测试,9-删除',
     `sort` tinyint(3) unsigned not null default 0 comment '排序',
     `add_at` int(10) unsigned not null default 0 comment '添加时间',
