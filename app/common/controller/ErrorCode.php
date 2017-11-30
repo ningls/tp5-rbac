@@ -14,6 +14,7 @@ class ErrorCode
         9007 => '该管理员已被删除'
     ];
 
+	//管理员状态对应错误码
 	const admin_status = [
         1 => 9006,
         9 => 9007,
