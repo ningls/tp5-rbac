@@ -46,7 +46,7 @@ class Sign extends Base
                     goto login_over;
                 }
             }
-            session('data',$this->admin_user);
+            session('user',$this->admin_user);
             login_over:
             return json(['code'=>$code,ErrorCode::error[$code]]);
         }
@@ -79,7 +79,7 @@ class Sign extends Base
         $condition['admin_pass'] = md5(md5($admin_pass));
         $this->admin_user = Db::name('admin_user')->where($condition)->find();
         $status = $this->admin_user['status'];
-        return $status?$status:9005;
+        return $status??9005;
     }
 
     /**
@@ -87,7 +87,7 @@ class Sign extends Base
      */
     public function logout()
     {
-        session('data',null);
+        session('user',null);
         $this->redirect('login');
     }
 }

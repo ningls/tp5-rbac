@@ -39,12 +39,20 @@ CREATE TABLE [[PREFIX]]admin_menu(
     `parent_id` tinyint(3) unsigned not null default 0 comment '父id',
     `status` tinyint(3) unsigned not null default 0 comment '状态 0-正常，1-禁用,8-测试,9-删除',
     `sort` tinyint(3) unsigned not null default 0 comment '排序',
-    `add_at` int(10) unsigned not null default 0 comment '添加时间',
+    `add_time` int(10) unsigned not null default 0 comment '添加时间',
     key `status`(`status`),
-    key `sort`('sort'),
-    key `left`(`is_left_menu`),
+    key `sort`(`sort`),
     key `parent`(`parent_id`)
 )charset = 'utf8' engine = innodb comment = '菜单表';
+
+/* 插入全局表初始数据 */
+INSERT INTO [[PREFIX]]admin_menu(`name`,`url`,`parent_id`,`sort`,`add_time`) values
+('系统管理','',0,99,unix_timestamp(now())),
+('菜单管理','menu/index',1,1,unix_timestamp(now())),
+('角色管理','role/index',1,2,unix_timestamp(now())),
+('用户管理','role/admin_user',1,3,unix_timestamp(now())),
+('行为日志','system/log',1,4,unix_timestamp(now())),
+('系统配置','system/config',1,5,unix_timestamp(now()));
 
 /* 权限表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_role_auth;

@@ -16,9 +16,9 @@ class Base extends CBase
 	/**
 	* 检测是否已经含有表以便生成admin
 	*/
-	public function _initialize():bool
+	public function _initialize()
 	{
-	    return false;
+//	    return false;
 	    parent::_initialize();
 		$action = request()->action();
 		$this->_prefix = config('database.prefix');
@@ -49,6 +49,8 @@ class Base extends CBase
 		}
 		//设置菜单
 		$this->set_menu();
+		//设置用户信息
+        $this->set_user();
 
 	}
 
@@ -66,7 +68,7 @@ class Base extends CBase
 
 
 	//rbac初始化
-	final public  function create_admin(Request $request):mixed
+	final public  function create_admin(Request $request)
 	{
 		if($this->auth_exists()) {
 			$this->redirect('index/index');
@@ -84,7 +86,7 @@ class Base extends CBase
             	'status'     => 0,
             	'add_time'   => time()
             ]);
-            session('data',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1]);
+            session('user',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1]);
             return json(['code'=>0,'msg'=>'初始化成功!']);
             
         }
@@ -103,7 +105,7 @@ class Base extends CBase
     private function create_auth():bool
     {
     	if(!is_file('./create_auth.sql')) {
-    		exit('文件 create_auth.sql 不存在！');
+    		return false;
     	}
         $sql = preg_replace('/\[\[PREFIX\]\]/',$this->_prefix,file_get_contents('create_auth.sql'));
         $sql = explode(';', $sql);
@@ -118,7 +120,7 @@ class Base extends CBase
 
   
     /**
-     * 生成api权限控制表
+     * 输出菜单
      */
     protected function set_menu()
     {
@@ -130,8 +132,31 @@ class Base extends CBase
     	else {
     		$condition['status'] = 0;
     	}
-    	$condition['parent_id'] = 0;
+    	$data = Db::name('admin_menu')->field('id,name,url,parent_id,status')->where($condition)->order('parent_id, sort')->select();
+    	$parents = [];
+    	$menus = [];
+    	foreach($data as $v) {
+    	    if($v['parent_id'] == 0 && !array_key_exists($v['name'],$menus)) {
+    	        $parents[$v['id']] = $v['name'];
+                $menus[$v['name']] = [];
+            }
+            if($v['parent_id'] != 0) {
+    	        $v['parent_name'] = $parents[$v['parent_id']];
+    	        $menus[$v['parent_name']][] = $v;
+            }
 
+        }
+        $this->assign('menu',$menus);
+    }
+
+    /**
+     * 输出用户基本信息
+     */
+    protected function set_user()
+    {
+        $this->assign('user',[
+            'admin_name'=> session('user.admin_name')
+        ]);
     }
 
 	//error_page
@@ -145,7 +170,7 @@ class Base extends CBase
 	* 是否登录
 	*/
 	protected function is_login(){
-		return session('data')?true:false;
+		return session('user')?true:false;
 	}
 
 }
