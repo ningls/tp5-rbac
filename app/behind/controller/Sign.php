@@ -4,6 +4,7 @@ namespace app\behind\controller;
 use app\common\controller\ErrorCode;
 use think\Db;
 use think\Request;
+use think\Session;
 
 class Sign extends Base
 {
@@ -87,7 +88,7 @@ class Sign extends Base
      */
     public function logout()
     {
-        session('user',null);
+        Session::destroy();
         $this->redirect('login');
     }
 }

@@ -58,7 +58,7 @@ class Tag extends Taglib
 
     /**
     * 判断是否有权限，不同实现方式则需重写
-    * @param str $name
+    * @param string $name
     * @return array
     */
     protected function getAuth()

@@ -14,7 +14,7 @@ CREATE TABLE [[PREFIX]]admin_user(
     unique `admin_phone`(`admin_phone`)
 )charset = 'utf8' engine = innodb comment = '管理用户表';
 
-/* 管理用户表 */
+/* 管理角色表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_role;
 CREATE TABLE [[PREFIX]]admin_role(
     `id` tinyint(3) unsigned not null PRIMARY KEY auto_increment comment '主键,角色id',

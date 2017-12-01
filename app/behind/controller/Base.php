@@ -4,6 +4,7 @@ use \app\common\controller\CBase;
 use \think\Request;
 use \think\Db;
 use \app\common\logic\CacheKey;
+use think\Session;
 
 class Base extends CBase
 {
@@ -47,11 +48,13 @@ class Base extends CBase
 		if(!$this->is_login()) {
 			$this->redirect('sign/login');
 		}
+		//获取权限
+        $this->get_auth();
 		//设置菜单
 		$this->set_menu();
 		//设置用户信息
         $this->set_user();
-
+        
 	}
 
 	/**
@@ -118,20 +121,35 @@ class Base extends CBase
         }
     }
 
+    protected function get_auth()
+    {
+        if(session('auth') == false) {
+            if(session('user.role_id') == 1) {
+                session('auth',Db::name('admin_menu')->field('distinct url')->column('url'));
+            }
+            else {
+                session('auth',json_decode(Db::name('admin_role_auth')->where(['role_id'=>session('user.role_id')])->value('role_auth'), true));
+            }
+        }
+        return true;
+    }
+
   
     /**
      * 输出菜单
      */
     protected function set_menu()
     {
-    	//top_menu
-    	//调试模式可见禁用菜单
+        if($menus = session("menu")) goto menu;
+
+        //调试模式可见禁用菜单
     	if(config('app_debug')) {
     		$condition['status'] = ['in',[0,1]];
     	}
     	else {
     		$condition['status'] = 0;
     	}
+    	$condition['url'] = ['in',array_merge(session('auth'),[''])];
     	$data = Db::name('admin_menu')->field('id,name,url,parent_id,status')->where($condition)->order('parent_id, sort')->select();
     	$parents = [];
     	$menus = [];
@@ -140,12 +158,15 @@ class Base extends CBase
     	        $parents[$v['id']] = $v['name'];
                 $menus[$v['name']] = [];
             }
-            if($v['parent_id'] != 0) {
+            if($v['parent_id'] != 0 && isset($parents[$v['parent_id']])) {
     	        $v['parent_name'] = $parents[$v['parent_id']];
     	        $menus[$v['parent_name']][] = $v;
             }
 
         }
+        unset($data);
+    	session('menu',$menus);
+    	menu:
         $this->assign('menu',$menus);
     }
 
