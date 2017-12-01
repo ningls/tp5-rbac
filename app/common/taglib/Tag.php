@@ -1,6 +1,6 @@
 <?php  
 namespace app\common\taglib;
-
+use think\Db;
 use think\template\TagLib;
 
 /**
@@ -63,8 +63,14 @@ class Tag extends Taglib
     */
     protected function getAuth()
     {
-    	$admin = session('admin');
-    	return ['a','b','c'];
+        if(session('auth') == false) {
+            if(session('user.role_id') == 1) {
+                session('auth',Db::name('admin_menu')->field('distinct url')->column('url'));
+            }
+            else {
+                session('auth',json_decode(Db::name('admin_role_auth')->where(['role_id'=>session('user.role_id')])->value('role_auth'), true));
+            }
+        }
     }
 
     protected function parseArr2Str($arr)

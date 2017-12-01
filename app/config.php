@@ -170,7 +170,7 @@ return [
         '__ASSETS__' => '/static/assets',
         '__FONTS__'  => '/static/fonts',
         '__LAYUI__'  => '/static/layui',
-        '__LAYJS__'  => '/static/layer'
+        '__LAYER__'  => '/static/layer'
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',

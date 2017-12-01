@@ -6,12 +6,13 @@ use think\Model;
 class AdminMenu extends Model
 {
     /**
-     * 显示所有的一级菜单
+     * 显示所有的菜单
      * @return object
      */
-    public function show_parent_menus()
+    public function show_menus()
     {
-        $condition['status'] = ['in',[0,1]];
-        return $this->where($condition)->select();
+        $prefix = config('database.prefix');
+        $sql = "select * from {$prefix}admin_menu where parent_id in (select id from {$prefix}admin_menu where parent_id = 0) or parent_id = 0 order by parent_id asc,sort asc";
+        return $this->query($sql);
     }
 }

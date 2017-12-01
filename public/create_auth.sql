@@ -7,6 +7,7 @@ CREATE TABLE [[PREFIX]]admin_user(
     `admin_name` varchar(32) not null default '' comment '管理员姓名',
     `admin_phone` varchar(15) not null default '' comment '管理员手机号',
     `role_id` tinyint(3) unsigned not null default 0 comment '角色id',
+    `create_user_id` tinyint(3) unsigned not null default 0 comment '创建人id',
     `last_login` int(10) unsigned not null default 0 comment '上次登录时间',
     `status` tinyint(2) unsigned not null default 0 comment '状态 0-正常，1-禁用，9-删除',
     `add_time` int(10) unsigned not null default 0 comment '增加时间',
@@ -21,6 +22,7 @@ CREATE TABLE [[PREFIX]]admin_role(
     `role_name` varchar(25) not null default '' comment '角色名称',
     `role_id` tinyint(3) unsigned not null default 0 comment '角色id',
     `parent_id` tinyint(3) unsigned not null default 0 comment '父id',
+    `create_user_id` tinyint(3) unsigned not null default 0 comment '创建人id',
     `status` tinyint(2) unsigned not null default 0 comment '状态 0-正常，1-禁用，9-删除',
     `add_time` int(10) unsigned not null default 0 comment '增加时间',
     key `role`(`role_id`),
@@ -28,7 +30,7 @@ CREATE TABLE [[PREFIX]]admin_role(
 )charset = 'utf8' engine = innodb comment = '管理用户表';
 
 /* 添加超级管理员 */
-INSERT INTO [[PREFIX]]admin_role(`role_name`,`role_id`,`parent_id`,`status`,`add_time`) values('超级管理员',1,0,0,unix_timestamp(now()));
+INSERT INTO [[PREFIX]]admin_role(`role_name`,`role_id`,`parent_id`,`create_user_id`,`status`,`add_time`) values('超级管理员',1,0,1,0,unix_timestamp(now()));
 
 /* 菜单表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_menu;

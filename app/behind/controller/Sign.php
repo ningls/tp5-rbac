@@ -1,7 +1,7 @@
 <?php
 
 namespace app\behind\controller;
-use app\common\controller\ErrorCode;
+use app\common\logic\ErrorCode;
 use think\Db;
 use think\Request;
 use think\Session;
