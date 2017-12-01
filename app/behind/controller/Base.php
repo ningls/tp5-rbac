@@ -101,6 +101,7 @@ class Base extends CBase
             	'role_id'    => 1,
             	'create_user_id' => 1,
             	'status'     => 0,
+            	'last_login' => time(),
             	'add_time'   => time()
             ]);
             session('user',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1]);
