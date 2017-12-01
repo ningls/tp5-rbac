@@ -8,7 +8,7 @@ class CBase extends Controller
     /**
      * @return bool
      */
-    public function _initialize():bool
+    public function _initialize()
     {
        if(PHP_VERSION < 7) exit('该框架适用于php7以上版本');
 

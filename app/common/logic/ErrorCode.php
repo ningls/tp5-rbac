@@ -1,5 +1,5 @@
 <?php
-namespace app\common\controller;
+namespace app\common\logic;
 
 class ErrorCode
 {
@@ -11,7 +11,9 @@ class ErrorCode
         9004 => '不存在手机号为该号码的管理员',
         9005 => '用户名或密码错误',
         9006 => '该管理员已被禁用',
-        9007 => '该管理员已被删除'
+        9007 => '该管理员已被删除',
+        9008 => 'create_auth.sql文件不存在！',
+        9009 => '执行create_auth.sql失败！'
     ];
 
 	//管理员状态对应错误码

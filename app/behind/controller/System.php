@@ -3,35 +3,19 @@ namespace app\behind\controller;
 
 class System extends Base
 {
-	/**
-	* 系统设置首页
-	*/
-	public function index()
-	{
-		return $this->fetch();
-	}
+    /**
+     * 系统配置
+     */
+	public function config()
+    {
 
-	/**
-	* 角色管理
-	*/
-	public function role()
-	{
+    }
 
-	}
+    /**
+     * 行为日志
+     */
+    public function log()
+    {
 
-	/**
-	* 菜单管理
-	*/
-	public function menu()
-	{
-
-	}
-
-	/**
-	* 权限管理
-	*/
-	public function auth()
-	{
-
-	}
+    }
 }
