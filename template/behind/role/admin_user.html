@@ -41,7 +41,16 @@
                             <td>{$u.add_time|date="Y-m-d H:i:s",###}</td>
                             <td>
                                 {auth name="role/disable_user"}
-                                    <a class="ajax-confirm" href="{:url('system/log')}" target="_blabk">123</a>
+                                    <a class="confirm" href="{:url('role/disable_user')}" target="_blabk">
+                                        {if condition="$u.status eq 0"}
+                                            锁定
+                                        {elseif condition="$u.status eq 1"}
+                                            解锁
+                                        {/if}
+                                    </a>
+                                {/auth}
+                                {auth name="role/del_user"}
+                                    <a class="comfirm" href="{:url('role/del_user')}">删除角色</a>
                                 {/auth}
                             </td>
                         </tr>
@@ -62,22 +71,31 @@
 {block name="js"}
 <script>
     $(function(){
-        $('.ajax-confirm').on('click',function(){
-            var data = $(this).attr('ajax-data');
-            if(data == 'undefined' || data == false ) {
-                layer.msg('没有数据');
+        $('.confirm').on('click',function(){
+            layer.confirm('是否确定操作？',{
+                btn:['确定','取消']
+            },function(){
+                //ajax操作
+                alert(1);
+                var data = $(this).attr('ajax-data');
+                if(data == 'undefined' || data == false ) {
+                    layer.msg('没有数据');
+                    return false;
+                }
+                var url = $(this).attr('href');
+                $.post(url,data,function(e){
+                    if(e.code == 0 ) {
+                        layer.msg('操作成功');
+                        window.reload();
+                    }
+                    else {
+                        layer.msg(e.msg);
+                    }
+                },'json')
                 return false;
-            }
-            var url = $(this).attr('href');
-            $.post(url,data,function(e){
-                if(e.code == 0 ) {
-                    layer.msg('操作成功');
-                    window.reload();
-                }
-                else {
-                    layer.msg(e.msg);
-                }
-            },'json')
+            },function(){
+                layer.msg('取消操作',{time:500})
+            });
             return false;
         })
     }())
