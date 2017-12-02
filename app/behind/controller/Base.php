@@ -57,6 +57,8 @@ class Base extends CBase
 
 		//获取权限
         $this->get_auth();
+        //判断执行权
+        $this->view_auth();
 		//设置菜单
 		$this->set_menu();
 		//设置当前访问
@@ -151,6 +153,17 @@ class Base extends CBase
             }
         }
         return true;
+    }
+
+    /**
+    * 判断是否有执行权
+    */
+    protected function view_auth()
+    {
+    	$act = strtolower(request()->controller()) . '/' . strtolower(request()->action());
+    	if(!in_array($act, session('auth'))) {
+    		exit(json_encode(['code'=>10000,'msg'=>ErrorCode::error[10000]]));
+    	}
     }
 
     /**

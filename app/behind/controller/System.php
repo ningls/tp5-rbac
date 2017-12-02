@@ -16,6 +16,6 @@ class System extends Base
      */
     public function log()
     {
-
+        dump(1);
     }
 }
