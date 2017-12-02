@@ -41,7 +41,7 @@
                             <td>{$u.add_time|date="Y-m-d H:i:s",###}</td>
                             <td>
                                 {auth name="role/disable_user"}
-                                    <a class="ajax-confirm" href="{:url('system/log')}" ajax-data="1" target="_blabk">123</a>
+                                    <a class="ajax-confirm" href="{:url('system/log')}" target="_blabk">123</a>
                                 {/auth}
                             </td>
                         </tr>
@@ -61,7 +61,26 @@
 
 {block name="js"}
 <script>
-
+    $(function(){
+        $('.ajax-confirm').on('click',function(){
+            var data = $(this).attr('ajax-data');
+            if(data == 'undefined' || data == false ) {
+                layer.msg('没有数据');
+                return false;
+            }
+            var url = $(this).attr('href');
+            $.post(url,data,function(e){
+                if(e.code == 0 ) {
+                    layer.msg('操作成功');
+                    window.reload();
+                }
+                else {
+                    layer.msg(e.msg);
+                }
+            },'json')
+            return false;
+        })
+    }())
 </script>
 {/block}
 

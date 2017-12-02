@@ -579,28 +579,6 @@
 
 <script src="__LAYER__/layer.js"></script>
 <script src="__LAYUI__/layui.js"></script>
-<script type="text/javascript">
-    $(function(){
-        $('.ajax-confirm').on('click',function(){
-            var data = $(this).attr('ajax-data');
-            if(data == 'undefined' || data == false ) {
-                layer.msg('没有数据');
-                return false;
-            }
-            var url = $(this).attr('href');
-            $.post(url,data,function(e){
-                if(e.code == 0 ) {
-                    layer.msg('操作成功');
-                    window.reload();
-                }
-                else {
-                    layer.msg(e.msg);
-                }
-            },'json')
-            return false;
-        })
-    }())
-</script>
 {block name="js"}
 {/block}
 </body>
