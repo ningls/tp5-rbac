@@ -34,7 +34,7 @@ class Role extends Base
         $model = new AdminUser();
         $user = $model->get_admin_user($this->global_setting['page_limit']);
         foreach($user as $k => $v) {
-            $user[$k]['status'] = StatusCode::admin_user_status[$v['status']];
+            $user[$k]['status_name'] = StatusCode::admin_user_status[$v['status']];
         }
         $this->assign('user',$user);
         return $this->fetch();
