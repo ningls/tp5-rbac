@@ -246,7 +246,7 @@
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <img src="__IMG__/user2-160x160.jpg" class="user-image" alt="User Image">
-                            <span class="hidden-xs">Alexander Pierce</span>
+                            <span class="hidden-xs">{$top_user.admin_name}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
@@ -319,7 +319,7 @@
             <!-- /.search form -->
             <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu" data-widget="tree">
-                {volist name="left_menu" id="m" key="key"}
+                {volist name="left_menu" id="m"}
                 <li class="{if condition='$now_act.parent_name eq $key'}active{/if} treeview">
                     <a href="#">
                         <i class="fa fa-laptop"></i>
@@ -327,7 +327,7 @@
                         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
-                        {volist name="m" id="mm" key='k'}
+                        {volist name="m" id="mm" key='kk'}
                             <li {if condition="$now_act.url eq $mm.url"}class="active"{/if}><a href="{:url($mm.url)}"><i class="fa fa-circle-o"></i>{$mm.name}</a></li>
                         {/volist}
                     </ul>
