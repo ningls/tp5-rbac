@@ -32,7 +32,7 @@ class Role extends Base
     public function admin_user()
     {
         $model = new AdminUser();
-        $user = $model->get_admin_user();
+        $user = $model->get_admin_user($this->global_setting['page_limit']);
         foreach($user as $k => $v) {
             $user[$k]['status'] = StatusCode::admin_user_status[$v['status']];
         }

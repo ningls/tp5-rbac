@@ -21,6 +21,7 @@
                             <th>手机号</th>
                             <th>角色</th>
                             <th>状态</th>
+                            <th>添加人</th>
                             <th>上次登录时间</th>
                             <th>添加时间</th>
                             <th>操作</th>
@@ -35,9 +36,13 @@
                             <td>{$u.admin_phone|}</td>
                             <td>{$u.role_name}</td>
                             <td>{$u.status}</td>
+                            <td>{$u.create_user_name}</td>
                             <td>{$u.last_login|date="Y-m-d H:i:s",###}</td>
                             <td>{$u.add_time|date="Y-m-d H:i:s",###}</td>
                             <td>
+                                {auth name="role/disable_user"}
+                                    <a class="ajax-confirm" href="www.baidu.com" target="_blabk">123</a>
+                                {/auth}
                             </td>
                         </tr>
                         {/volist}

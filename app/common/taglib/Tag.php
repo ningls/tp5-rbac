@@ -32,7 +32,7 @@ class Tag extends Taglib
      */
     public function tagAuth($tag, $content)
     {
-        $name = !empty($tag['expression']) ? $tag['expression'] : $tag['name'];
+        $name = !empty($tag['expression']) ? $tag['expression'] : strtolower($tag['name']);
         $auth = $this->getAuth();
         $auth = $this->parseArr2Str($auth);
         $parseStr  = "<?php if(in_array('" . $name . "', ".$auth .'  )): ?>' . $content . '<?php endif; ?>';
@@ -63,14 +63,17 @@ class Tag extends Taglib
     */
     protected function getAuth()
     {
-        if(session('auth') == false) {
-            if(session('user.role_id') == 1) {
-                session('auth',Db::name('admin_menu')->field('distinct url')->column('url'));
-            }
-            else {
-                session('auth',json_decode(Db::name('admin_role_auth')->where(['role_id'=>session('user.role_id')])->value('role_auth'), true));
-            }
+        if(session('auth')) goto auth;
+        
+        if(session('user.role_id') == 1) {
+            session('auth',Db::name('admin_menu')->field('distinct url')->column('url'));
         }
+        else {
+            session('auth',json_decode(Db::name('admin_role_auth')->where(['role_id'=>session('user.role_id')])->value('role_auth'), true));
+        }
+        auth:
+        return session('auth');
+
     }
 
     protected function parseArr2Str($arr)

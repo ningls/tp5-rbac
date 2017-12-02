@@ -10,4 +10,10 @@ class CacheKey
 	const BEHIND_CACHE = [
 		'top_menu' => 'hebind_top_menu',
 	];
+
+	//session 对照
+	private $session_key_value = [
+		'user' => '用户信息',
+		'auth' => '权限信息'
+	];
 }

@@ -23,8 +23,10 @@ class Base extends CBase
 	*/
 	public function _initialize()
 	{
-//	    return false;
 	    parent::_initialize();
+	    if(config('app_debug')) {
+			Session::delete('auth');
+		}
 		$action = request()->action();
 		$this->_prefix = config('database.prefix');
 		if(in_array($action,['create_auth', 'auth_exists', 'create_admin', 'error_page'])) return false;
