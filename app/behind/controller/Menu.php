@@ -5,6 +5,7 @@ use \app\common\logic\ErrorCode;
 use  \app\common\logic\StatusCode;
 use  \app\common\logic\CacheKey;
 use \think\Db;
+use \think\Request;
 
 /**
  * Class Menu
@@ -19,7 +20,6 @@ class Menu extends Base
         $menu = $this->cache_menu();
         assign:
         $this->assign('menu',$menu);
-        dump($menu);
         return $this->fetch();
     }
 
@@ -51,10 +51,10 @@ class Menu extends Base
             $menu = cache(CacheKey::BEHIND_CACHE['menu_list']);
             foreach($menu as $k => $v) {
                 if($v['parent_id'] == 0) {
-                    $menu[$k]['name'] .= '-';
+                    $menu[$k]['name'] = '-' . $v['name'];
                 }
                 else {
-                    $menu[$k]['name'] .= '---';
+                    $menu[$k]['name'] = '---' . $v['name'];
                 }
             }
             $this->assign('menu',$menu);

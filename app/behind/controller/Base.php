@@ -203,12 +203,18 @@ class Base extends CBase
     }
 
     /**
-     * 获取当前操作
-     */
+    * 获取当前操作 
+    */
     protected function now_act()
     {
 
         $act = strtolower(request()->controller()) . '/' . strtolower(request()->action());
+        $sql = "select url,parent_id from {$this->_prefix}admin_menu where id = (select parent_id from {$this->_prefix}admin_menu where url = '{$act}')";
+        $menu_info = Db::Query($sql)[0];
+        if($menu_info['parent_id'] != 0) {
+        	$name = Db::name('admin_menu')->where(['url'=>$act])->value('name');
+        	$act = $menu_info['url'];
+        }
         $menu = session('menu');
         foreach($menu as $v) {
             foreach($v as $vv) {
@@ -217,6 +223,9 @@ class Base extends CBase
                     break;
                 }
             }
+        }
+        if($menu_info['parent_id'] != 0) {
+        	$this->act['name'] = $name;
         }
         $this->assign('now_act',$this->act);
     }

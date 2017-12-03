@@ -6,68 +6,31 @@
         <div class="col-lg-12">
             <section class="panel">
                 <div class="panel-body">
-                    <form action="" class="form-horizontal" method="get">
-                        <div class="row">
-                            <div class="form-group col-lg-5">
-                                <label for="add_reg_start_time" class="col-sm-4 control-label">注册开始时间</label>
-                                <div class="col-sm-8">
-                                    <input type="date" name="add_reg_start_time" class="form-control datepicker" id="add_reg_start_time" placeholder="注册开始时间" value="{$where.add_reg_start_time|default=''}">
-                                </div>
+                    <div class="table-responsive col-lg-6" tabindex="1" style="overflow: hidden; outline: none;" >
+                       <form role="form" method="post">
+                            <div class="form-group">
+                                <label for="admin_user">管理员账号</label>
+                                <input type="text" class="form-control" required id="admin_user" name="admin_user" placeholder="管理员账号">
+                            </div>
+                            <div class="form-group">
+                                <label for="admin_pass">管理员密码</label>
+                                <input type="password" class="form-control" required id="admin_pass" name="admin_pass" placeholder="管理员密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="admin_pass2">重复密码</label>
+                                <input type="password" class="form-control" required id="admin_pass2" placeholder="重复密码">
+                            </div>
+                            <div class="form-group">
+                                <label for="admin_name">管理员姓名</label>
+                                <input type="text" class="form-control" required id="admin_name" name="admin_name" placeholder="管理员姓名">
+                            </div>
+                            <div class="form-group">
+                                <label for="admin_phone">管理员手机号</label>
+                                <input type="number" required class="form-control" id="admin_phone" name="admin_phone" placeholder="管理员手机号">
                             </div>
 
-                            <div class="form-group col-lg-5">
-                                <label for="add_reg_end_time" class="col-sm-4 control-label">注册结束时间</label>
-                                <div class="col-sm-8">
-                                    <input type="date" name="add_reg_end_time"class="form-control datepicker" id="add_reg_end_time" placeholder="注册结束时间" value="{$where.add_reg_end_time|default=''}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-
-
-                        <div class="row">
-                            <div class="col-lg-5 col-lg-offset-1">
-                                <input type="hidden" name="search" value="1">
-                                <button type="submit" class="btn btn-primary "> 查询</button>
-                                <button class="btn btn-default reset" type="reset"> 重置</button>
-                            </div>
-                        </div>
-
-                    </form>
-                    <hr/>
-
-
-                    <div class="table-responsive col-lg-10 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;" >
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>id</th>
-                                    <th>名称</th>
-                                    <th>URL</th>
-                                    <th>上级菜单</th>
-                                    <th>排序</th>
-                                    <th>状态</th>
-                                    <th>添加时间</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {volist name="menu" id="m"}
-                                    <tr>
-                                        <td>{$m.id}</td>
-                                        <td>{$m.name}</td>
-                                        <td>{$m.url}</td>
-                                        <td>{$m.parent_name|default="顶级菜单"}</td>
-                                        <td>{$m.sort}</td>
-                                        <td>{$m.status}</td>
-                                        <td>{$m.add_time|date="Y-m-d H:i:s",###}</td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                {/volist}
-                            </tbody>
-                        </table>
+                            <button type="submit" class="btn btn-info">提交</button>
+                        </form>
 
                     </div>
                 </div>
