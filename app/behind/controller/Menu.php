@@ -16,6 +16,57 @@ class Menu extends Base
     public function index()
     {
         if($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) goto assign;
+        $menu = $this->cache_menu();
+        assign:
+        $this->assign('menu',$menu);
+        dump($menu);
+        return $this->fetch();
+    }
+
+    /**
+    * 新增菜单
+    */
+    public function add_menu(Request $request)
+    {
+        if($request->isAjax()) {
+            $data['name'] = $request->post('name','','htmlspecialchars');
+            $data['url'] = strtolower($request->post('url',''));
+            $data['sort'] = $request->post('sort',0,'intval');
+            $data['parent_id'] = $request->post('parent_id',0,'intval');
+            if( $data['name'] == false && $code = 9010 || $data['url'] == false && $code = 9011 || !preg_match('/[\w]+\/[\w]+/',$data['url']) && $code = 9012 ) {
+                goto res;
+            }
+            $data['add_time'] = time();
+            try{
+                Db::name('menu')->insert($data);
+                $code = 0;
+            }
+            catch(\PDOException $e) {
+                $code = 9999;
+            }
+            res:
+            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]);
+        }
+        else {
+            $menu = cache(CacheKey::BEHIND_CACHE['menu_list']);
+            foreach($menu as $k => $v) {
+                if($v['parent_id'] == 0) {
+                    $menu[$k]['name'] .= '-';
+                }
+                else {
+                    $menu[$k]['name'] .= '---';
+                }
+            }
+            $this->assign('menu',$menu);
+            return $this->fetch();
+        }
+    }
+
+    /**
+    * 缓存菜单
+    */
+    protected function cache_menu()
+    {
         $model = new MenuModel();
         $data = $model->show_menus();
         $menu = [];
@@ -51,37 +102,6 @@ class Menu extends Base
             }
         }
         cache(CacheKey::BEHIND_CACHE['menu_list'], $menu);
-        assign:
-        $this->assign('menu',$menu);
-        return $this->fetch();
-    }
-
-    /**
-    * 新增菜单
-    */
-    public function add_menu(Request $request)
-    {
-        if($request->isAjax()) {
-            $data['name'] = $request->post('name','','htmlspecialchars');
-            $data['url'] = strtolower($request->post('url',''));
-            $data['sort'] = $request->post('sort',0,'intval');
-            $data['parent_id'] = $request->post('parent_id',0,'intval');
-            if( $data['name'] == false && $code = 9010 || $data['url'] == false && $code = 9011 || preg_match('/[\w]+\/[\w]+/',$data['url']) && $code = 9012 ) {
-                goto res;
-            }
-            $data['add_time'] = time();
-            try{
-                Db::name('menu')->insert($data);
-                $code = 0;
-            }
-            catch(\PDOException $e) {
-                $code = 9999;
-            }
-            res:
-            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]);
-        }
-        else {
-            return $this->fetch();
-        }
+        return $menu;
     }
 }
