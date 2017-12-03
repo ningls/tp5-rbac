@@ -46,6 +46,7 @@ class Base extends CBase
 		$setting = Db::name('global_setting')->select();
 		foreach($setting as $v) {
 		    $this->global_setting[$v['key']] = $v['value'];
+		    $this->assign('system',$this->global_setting);
         }
 		//sign控制器时跳出
         if(strtolower(request()->controller()) === 'sign') {

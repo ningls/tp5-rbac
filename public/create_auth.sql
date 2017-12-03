@@ -54,7 +54,8 @@ INSERT INTO [[PREFIX]]admin_menu(`name`,`url`,`parent_id`,`sort`,`add_time`) val
 ('角色管理','role/index',1,2,unix_timestamp(now())),
 ('用户管理','role/admin_user',1,3,unix_timestamp(now())),
 ('行为日志','system/log',1,4,unix_timestamp(now())),
-('系统配置','system/config',1,5,unix_timestamp(now()));
+('系统配置','system/config',1,5,unix_timestamp(now())),
+('新增菜单','menu/add_menu',2,1,unix_timestamp(now()));
 
 /* 权限表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_role_auth;
@@ -102,6 +103,7 @@ CREATE TABLE [[PREFIX]]global_setting(
 
 /* 插入全局表初始数据 */
 INSERT INTO [[PREFIX]]global_setting(`key`,`value`,`comment`) values
+('system_name','','后台名称'),
 ('log_open',1,'是否开启日志，1-是，0-否'),
 ('sms_verify',0,'后台登录短信验证，1-是，0-否'),
 ('sms_expire',3000,'短信验证码过期时间'),
