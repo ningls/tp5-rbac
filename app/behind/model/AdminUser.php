@@ -19,6 +19,6 @@ class AdminUser extends Model
     */
     public function get_user_id_and_name()
     {
-    	return $this->field('id,admin_name,status');
+    	return $this->field('id,admin_name,status')->order('status asc')->select();
     }
 }

@@ -9,15 +9,18 @@ use think\Session;
 
 class Base extends CBase
 {
+	//错误信息
 	protected $error_msg;
-
 	//全局设置
 	protected $global_setting;
-
+	//表前缀
 	private $_prefix;
-
 	//当前操作
 	protected $act;
+	//当前访问链接
+	protected $view_url;
+	//当前访问名称
+	protected $view_name;
 	/**
 	* 检测是否已经含有表以便生成admin
 	*/
@@ -161,8 +164,8 @@ class Base extends CBase
     */
     protected function view_auth()
     {
-    	$act = strtolower(request()->controller()) . '/' . strtolower(request()->action());
-    	if(!in_array($act, session('auth'))) {
+    	$this->view_url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
+    	if(!in_array($this->view_url, session('auth'))) {
     		exit(json_encode(['code'=>10000,'msg'=>ErrorCode::error[10000]]));
     	}
     }
@@ -207,11 +210,12 @@ class Base extends CBase
     */
     protected function now_act()
     {
-        $act = $url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
+        $act = $this->view_url;
+
         $sql = "select url,parent_id from {$this->_prefix}admin_menu where id = (select parent_id from {$this->_prefix}admin_menu where url = '{$act}')";
         $menu_info = Db::Query($sql)[0];
         if($menu_info['parent_id'] != 0) {
-        	$name = Db::name('admin_menu')->where(['url'=>$act])->value('name');
+        	$this->view_name = $name = Db::name('admin_menu')->where(['url'=>$act])->value('name');
         	$act = $menu_info['url'];
         }
         $menu = session('menu');
@@ -219,15 +223,17 @@ class Base extends CBase
             foreach($v as $vv) {
                 if($vv['url'] == $act) {
                     $this->act = ['parent_name' => $vv['parent_name'],'url'=>$vv['url'],'name'=>$vv['name']];
+                    $this->view_name = $vv['name'];
                     break;
                 }
             }
         }
-        if($this->global_setting['log_open']) {
-        	$this->act_log($url,$this->act['name'],session('user.id'));
-        }
         if($menu_info['parent_id'] != 0) {
         	$this->act['name'] = $name;
+        	$this->view_name = $name;
+        }
+        if($this->global_setting['log_open']) {
+        	$this->act_log($this->view_url,$this->view_name,session('user.id'));
         }
         $this->assign('now_act',$this->act);
     }

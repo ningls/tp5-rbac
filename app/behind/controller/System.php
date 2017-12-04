@@ -25,6 +25,7 @@ class System extends Base
         $start = $request->get('start_time','');
         $end = $request->get('end_time','');
         $admin_id = $request->get('admin_id',0,'intval');
+        $url = $request->get('view_url','');
         $where = [];
         if($start !== '') {
             $where['view_at'] = ['egt',strtotime($start)];
@@ -34,6 +35,9 @@ class System extends Base
         }
         if($admin_id !== 0) {
             $where['admin_id'] = $admin_id;
+        }
+        if($url !== '') {
+            $where['view_url'] = $url;
         }
         $page = $request->get('number_page',0,'intval')??$this->global_setting['page_limit'];
         $data = $model->get_log($page, $where);
@@ -45,11 +49,17 @@ class System extends Base
                 $user_data[$k]['admin_name'] .= StatusCode::admin_user_status[$v['status']];
             }
         }
-        
         $this->assign([
             'user_data' => $user_data,
             'log_data' => $data,
-            'page' => $data->render()
+            'page' => $data->render(),
+            'where' => [
+                'start_time' => $start,
+                'end_time' => $end,
+                'admin_id' => $admin_id,
+                'view_url' => $url,
+                'page' => $page
+            ]
         ]);
         return $this->fetch();
 

@@ -8,21 +8,45 @@
                 <div class="panel-body">
                     <div class="table-responsive col-lg-10 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;" >
                         <div class="row">
-                            <form action="get">
-                            	
-
-                            </form>
-                                <a href="{:url('add_menu')}" class="btn btn-primary ">新增菜单</a>
-                           
-                            <hr>
+                            <div class="table-responsive col-lg-10 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;" >
+								<form method="get">
+									<div class="row">
+										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
+											<label">开始时间:</label>
+										    <div class="layui-input-inline">
+										        <input type="text" class="layui-input" id="start_time" name="start_time" placeholder="yyyy-MM-dd" value="{$where.start_time|default=''}">
+										    </div>
+										</div>
+										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
+										    <label">截止时间:</label>
+										    <div class="layui-input-inline">
+										        <input type="text" class="layui-input" id="end_time" name="end_time" placeholder="yyyy-MM-dd" value="{$where.end_time|default=''}">
+										    </div>
+										</div>	 
+									</div>
+									<div class="row">
+										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
+											<label>每页条数</label>
+										    <div class="layui-input-inline">
+										        <input type="number" name="number_page" value="{$where.page|default=0}">
+										    </div>
+										</div>
+										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
+										    <button type="submit" class="btn btn-primary ">查找</a>
+										</div>	 
+									</div>
+									
+								</form>
+                            </div>
                         </div>
+                        <hr>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>id</th>
                                     <th>访问地址</th>
                                     <th>访问名称</th>
-                                    <th>用户人</th>
+                                    <th>操作者</th>
                                     <th>访问时间</th>
                                     <th>访问ip</th>
                                 </tr>
@@ -55,7 +79,16 @@
 
 {block name="js"}
 <script>
-
+	  layui.use('laydate', function(){
+      var laydate = layui.laydate;
+      //常规用法
+      laydate.render({
+        elem: '#start_time'
+      });
+      laydate.render({
+        elem: '#end_time'
+      });
+  });
 </script>
 {/block}
 
