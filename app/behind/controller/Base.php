@@ -98,7 +98,8 @@ class Base extends CBase
             if($code = $this->create_auth()) {
                 goto init_over;
             }
-            $id = Db::name('admin_user')->insert([
+
+            $id = Db::name('admin_user')->insertGetId([
             	'admin_user' => $request->param('admin_user','','htmlspecialchars'),
             	'admin_pass' => md5(md5($request->param('admin_pass','','htmlspecialchars'))),
             	'admin_name' => $request->param('admin_name','','htmlspecialchars'),
@@ -112,8 +113,7 @@ class Base extends CBase
             session('user',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1]);
             $code = 0;
             init_over:
-            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]);
-            
+            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]); 
         }
         elseif ($request->isGet()) {
             return $this->fetch();
@@ -207,8 +207,7 @@ class Base extends CBase
     */
     protected function now_act()
     {
-
-        $act = strtolower(request()->controller()) . '/' . strtolower(request()->action());
+        $act = $url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
         $sql = "select url,parent_id from {$this->_prefix}admin_menu where id = (select parent_id from {$this->_prefix}admin_menu where url = '{$act}')";
         $menu_info = Db::Query($sql)[0];
         if($menu_info['parent_id'] != 0) {
@@ -224,10 +223,31 @@ class Base extends CBase
                 }
             }
         }
+        if($this->global_setting['log_open']) {
+        	$this->act_log($url,$this->act['name'],session('user.id'));
+        }
         if($menu_info['parent_id'] != 0) {
         	$this->act['name'] = $name;
         }
         $this->assign('now_act',$this->act);
+    }
+
+    /**
+    * 写入日志
+    */
+    protected function act_log(string $url,string $name,int $user_id) {
+    	$data['view_url'] = $url;
+    	$data['view_name'] = $name;
+    	$data['admin_id'] = $user_id;
+    	$data['view_at'] = time();
+    	$data['view_ip'] = request()->ip();
+    	try{
+    		Db::name('admin_log')->insert($data);
+    	}
+    	catch(\PDOException | \think\Exception $e) {
+    		exit('写入日志表失败');
+    	}
+    	
     }
 
 
