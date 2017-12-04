@@ -1,0 +1,62 @@
+{extend name="base:layout"}
+
+{block name="body"}
+    <!-- page start-->
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+                <div class="panel-body">
+                    <div class="table-responsive col-lg-10 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;" >
+                        <div class="row">
+                            <form action="get">
+                            	
+
+                            </form>
+                                <a href="{:url('add_menu')}" class="btn btn-primary ">新增菜单</a>
+                           
+                            <hr>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>访问地址</th>
+                                    <th>访问名称</th>
+                                    <th>用户人</th>
+                                    <th>访问时间</th>
+                                    <th>访问ip</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {volist name="log_data" id="d"}
+                                    <tr>
+                                        <td>{$d.id}</td>
+                                        <td>{$d.view_url}</td>
+                                        <td>{$d.view_name}</td>
+                                        <td>{$d.admin_name}</td>
+                                        <td>{$d.view_at|date="Y-m-d H:i:s",###}</td>
+                                        <td>{$d.view_ip}</td>
+                                    </tr>
+                                {/volist}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="paginate">
+                    	{$page}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- page end-->
+
+
+{/block}
+
+{block name="js"}
+<script>
+
+</script>
+{/block}
+
+
