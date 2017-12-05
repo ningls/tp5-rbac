@@ -9,8 +9,10 @@ use think\Session;
 
 class Base extends CBase
 {
-	//错误信息
-	protected $error_msg;
+	//状态码
+	protected $code = 0;
+	//错误页面信息 todo
+    protected $error_msg;
 	//全局设置
 	protected $global_setting;
 	//表前缀
@@ -94,11 +96,11 @@ class Base extends CBase
 		if($request->isAjax()) {
 		    $phone = $request->param('admin_phone',0);
             if(!preg_match('/1[3|5|7|8][\d]{9}/',$phone)) {
-                $code = 9001;
+                $this->code = 9001;
                 goto init_over;
             }
 
-            if($code = $this->create_auth()) {
+            if($this->code = $this->create_auth()) {
                 goto init_over;
             }
 
@@ -114,9 +116,9 @@ class Base extends CBase
             	'add_time'   => time()
             ]);
             session('user',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1]);
-            $code = 0;
+            $this->code = 0;
             init_over:
-            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]); 
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
         }
         elseif ($request->isGet()) {
             return $this->fetch();
@@ -166,7 +168,8 @@ class Base extends CBase
     {
     	$this->view_url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
     	if(!in_array($this->view_url, session('auth'))) {
-    		exit(json_encode(['code'=>10000,'msg'=>ErrorCode::error[10000]]));
+    	    $this->code = 10000;
+    		exit(json_encode(['code'=>$this->code,'msg'=>ErrorCode::error[10000]]));
     	}
     }
 
@@ -189,6 +192,9 @@ class Base extends CBase
     	$parents = [];
     	$menus = [];
     	foreach($data as $v) {
+            if($v['status'] == 1) {
+                $v['name'] .= '(已禁用)';
+            }
     	    if($v['parent_id'] == 0 && !array_key_exists($v['name'],$menus)) {
     	        $parents[$v['id']] = $v['name'];
                 $menus[$v['name']] = [];
@@ -229,11 +235,8 @@ class Base extends CBase
             }
         }
         if($menu_info['parent_id'] != 0) {
-        	$this->act['name'] = $name;
-        	$this->view_name = $name;
-        }
-        if($this->global_setting['log_open']) {
-        	$this->act_log($this->view_url,$this->view_name,session('user.id'));
+        	$this->act['name'] = $name??'';
+        	$this->view_name = $name??'';
         }
         $this->assign('now_act',$this->act);
     }
@@ -241,16 +244,18 @@ class Base extends CBase
     /**
     * 写入日志
     */
-    protected function act_log(string $url,string $name,int $user_id) {
+    protected function act_log(string $url,string $name, $info,int $user_id) {
+        $user_id = $user_id??0;
     	$data['view_url'] = $url;
-    	$data['view_name'] = $name;
+    	$data['view_name'] = $name??'';
     	$data['admin_id'] = $user_id;
+    	$data['info'] = $info;
     	$data['view_at'] = time();
     	$data['view_ip'] = request()->ip();
     	try{
     		Db::name('admin_log')->insert($data);
     	}
-    	catch(\PDOException | \think\Exception $e) {
+    	catch(\PDOException $e) {
     		exit('写入日志表失败');
     	}
     	
@@ -283,4 +288,20 @@ class Base extends CBase
 		return session('user')?true:false;
 	}
 
+    /**
+     * 结束写入日志
+     * 访问请求method为get，操作请求method为post
+     */
+	public function __destruct()
+    {
+        if($this->global_setting['log_open']) {
+            if(request()->isGet()) {
+                $msg = $this->code?ErrorCode::error[$this->code]:'访问';
+                $this->act_log($this->view_url,$this->view_name,$msg,session('user.id'));
+            }elseif (request()->isPost()) {
+                $this->view_name .= ($this->code?'失败':'成功');
+                $this->act_log($this->view_url,$this->view_name,ErrorCode::error[$this->code],session('user.id'));
+            }
+        }
+    }
 }

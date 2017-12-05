@@ -91,4 +91,12 @@ class Sign extends Base
         Session::destroy();
         $this->redirect('login');
     }
+
+    /**
+     * 重写析构方法
+     */
+    public function __destruct()
+    {
+        return false;
+    }
 }

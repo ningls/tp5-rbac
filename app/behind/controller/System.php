@@ -1,7 +1,8 @@
 <?php
 namespace app\behind\controller;
+use app\behind\model\AdminMenu;
 use \think\Request;
-use \app\behind\model\Adminlog;
+use \app\behind\model\AdminLog;
 use \app\behind\model\AdminUser;
 use \app\common\logic\StatusCode;
 
@@ -25,7 +26,7 @@ class System extends Base
         $start = $request->get('start_time','');
         $end = $request->get('end_time','');
         $admin_id = $request->get('admin_id',0,'intval');
-        $url = $request->get('view_url','');
+        $url = $request->get('url','');
         $where = [];
         if($start !== '') {
             $where['view_at'] = ['egt',strtotime($start)];
@@ -44,6 +45,14 @@ class System extends Base
 
         $user_model = new AdminUser();
         $user_data = $user_model->get_user_id_and_name();
+        $menu_model = new AdminMenu();
+        $menu_data = $menu_model->show_son_menus();
+        foreach($menu_data as $k => $v) {
+//            $menu_data[$k]['name'] .= $v['url'];
+            if($v['status'] != 0) {
+                $menu_data[$k]['name'] .= StatusCode::menu_status[$v['status']];
+            }
+        }
         foreach($user_data as $k => $v) {
             if($v['status'] != 0) {
                 $user_data[$k]['admin_name'] .= StatusCode::admin_user_status[$v['status']];
@@ -52,6 +61,7 @@ class System extends Base
         $this->assign([
             'user_data' => $user_data,
             'log_data' => $data,
+            'menu_data' => $menu_data,
             'page' => $data->render(),
             'where' => [
                 'start_time' => $start,

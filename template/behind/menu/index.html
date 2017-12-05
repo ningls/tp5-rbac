@@ -11,6 +11,10 @@
                             {auth name="menu/add_menu"}
                                 <a href="{:url('add_menu')}" class="btn btn-primary ">新增菜单</a>
                             {/auth}
+
+                            {auth name="auth/auth_by_menu"}
+                            <a href="{:url('auth/auth_by_menu')}" class="btn btn-primary ">菜单权限</a>
+                            {/auth}
                             <hr>
                         </div>
                         <table class="table table-bordered">
@@ -34,9 +38,30 @@
                                         <td>{$m.url}</td>
                                         <td>{$m.parent_name|default="顶级菜单"}</td>
                                         <td>{$m.sort}</td>
-                                        <td>{$m.status}</td>
+                                        <td>{$m.status_name}</td>
                                         <td>{$m.add_time|date="Y-m-d H:i:s",###}</td>
                                         <td>
+                                            {auth name="menu/edit_menu"}
+                                                <a class="btn btn-info btn-xs" href="{:url('edit_menu',['id'=>$m.id])}">编辑</a>
+                                            {/auth}
+
+                                            {auth name="menu/disable_menu"}
+                                                {if condition="$m.status eq 0"}
+                                                    <a class="btn btn-success btn-xs disable" data-id="{$m.id}" data-status="{$m.status}">禁用</a>
+                                                {elseif condition="$m.status eq 1" /}
+                                                    <a class="btn btn-default btn-xs disable" data-id="{$m.id}" data-status="{$m.status}">激活</a>
+                                                {/if}
+                                            {/auth}
+
+                                            {auth name="menu/del_menu"}
+                                            {if condition="$m.status neq 9"}
+                                            <a class="btn btn-danger btn-xs del_menu" data-id="{$m.id}">删除</a>
+                                            {else/}
+                                            <a class="btn btn-danger btn-xs disabled" data-id="{$m.id}">已删除</a>
+                                            {/if}
+                                            {/auth}
+
+
                                         </td>
                                     </tr>
                                 {/volist}
@@ -55,7 +80,55 @@
 
 {block name="js"}
 <script>
+    $(function(){
+        $('.disable').on('click',function(){
+            var url = "{:url('disable_menu')}";
+            var data = {
+                id:$(this).attr('data-id'),
+                status:$(this).attr('data-status')
+            }
+            if(data.id == false || data.status != 0 && data.status != 1) {
+                layer.alert('非法参数');
+                return false;
+            }
+            $.post(url,data,function(e){
+                if(e.code == 0) {
+                    layer.msg('操作成功');
+                    setTimeout('location.reload()',1000);
+                }
+                else{
+                    layer.alert(e.msg)
+                }
+            },'json')
+        })
 
+        $('.del_menu').on('click',function(){
+            var _this = this;
+            layer.confirm('删除后将无法恢复，是否确认删除？',{
+                btn:['确定','取消']
+            },function(){
+                var data = {
+                    id:$(_this).attr('data-id')
+                }
+                if(data.id == false) {
+                    layer.alert('非法参数');
+                    return false;
+                }
+                var url = "{:url('menu/del_menu')}";
+                $.post(url,data,function(e){
+                    if(e.code == 0 ) {
+                        layer.msg('操作成功');
+                        setTimeout("location.reload()",1000);
+                    }
+                    else {
+                        layer.msg(e.msg);
+                    }
+                },'json')
+            },function(){
+                layer.msg('取消操作',{time:500})
+            });
+        })
+    }())
 </script>
 {/block}
 

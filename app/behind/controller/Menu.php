@@ -16,9 +16,16 @@ class Menu extends Base
 {
     public function index()
     {
-        if($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) goto assign;
-        $menu = $this->cache_menu();
+        cache(CacheKey::BEHIND_CACHE['menu_tree'],null);
+        if($menu = cache(CacheKey::BEHIND_CACHE['menu_tree'])) goto assign;
+        $menu = $this->cache_tree_menu();
         assign:
+        foreach($menu as $k => $v) {
+            if($v['parent_id'] != 0) {
+                $menu[$k]['name'] = '|' . str_repeat('------',(int)$v['level']) . $v['name'];
+            }
+            $menu[$k]['status_name'] = StatusCode::menu_status[$v['status']];
+        }
         $this->assign('menu',$menu);
         return $this->fetch();
     }
@@ -28,38 +35,98 @@ class Menu extends Base
     */
     public function add_menu(Request $request)
     {
+
         if($request->isAjax()) {
             $data['name'] = $request->post('name','','htmlspecialchars');
             $data['url'] = strtolower($request->post('url',''));
             $data['sort'] = $request->post('sort',0,'intval');
             $data['parent_id'] = $request->post('parent_id',0,'intval');
-            if( $data['name'] == false && $code = 9010 || $data['url'] == false && $code = 9011 || !preg_match('/[\w]+\/[\w]+/',$data['url']) && $code = 9012 ) {
+            $id = 0;
+            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 || !preg_match('/[\w]+\/[\w]+/',$data['url']) && $this->code = 9012 ) {
                 goto res;
             }
             $data['add_time'] = time();
             try{
-                Db::name('menu')->insert($data);
-                $code = 0;
+                $id = Db::name('admin_menu')->insertGetId($data);
+                //重新缓存菜单
+                $this->cache_menu();
+                session('menu',null);
+                $this->code = 0;
             }
             catch(\PDOException $e) {
-                $code = 9999;
+                $this->code = 9999;
             }
             res:
-            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]);
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code],'data'=> !empty($id)?url('auth/auth_by_menu',['menu_id'=>$id]):null]);
         }
         else {
-            $menu = cache(CacheKey::BEHIND_CACHE['menu_list']);
+            if(($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) == false) {
+                $menu = $this->cache_menu();
+            }
             foreach($menu as $k => $v) {
                 if($v['parent_id'] == 0) {
-                    $menu[$k]['name'] = '-' . $v['name'];
+                    $menu[$k]['name'] = '|-' . $v['name'];
                 }
                 else {
-                    $menu[$k]['name'] = '---' . $v['name'];
+                    $menu[$k]['name'] = '|---' . $v['name'];
                 }
             }
             $this->assign('menu',$menu);
             return $this->fetch();
         }
+    }
+
+    /**
+     * 编辑菜单 todo
+     */
+    public function edit_menu()
+    {
+        $id = request()->param('id',0,'intval');
+
+        if(!$id) {
+            $this->code = 9013;
+            $this->error('非法参数',url('index'));
+        }
+        if(request()->isAjax()) {
+
+        }
+        elseif(request()->isGet()){
+            $info = Db::name('admin_menu')->find($id);
+            dump($info);
+        }
+    }
+
+    /**
+     * 禁用/激活菜单
+     */
+    public function disable_menu()
+    {
+
+        $id = request()->param('id',0,'intval');
+        $status = request()->param('status',0,'intval');
+        if(!$id || !in_array($status,[0,1])) {
+            $this->code = 9013;
+            $this->error('非法参数',url('index'));
+        }
+        $set_status = $status?0:1;
+        $model = new MenuModel();
+        $this->code = $model->set_menu_status($id,$set_status,9014);
+        return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
+    }
+
+    /**
+     * 删除菜单
+     */
+    public function del_menu()
+    {
+        $id = request()->param('id',0,'intval');
+        if(!$id) {
+            $this->code = 9013;
+            $this->error('非法参数',url('index'));
+        }
+        $model = new MenuModel();
+        $this->code = $model->set_menu_status($id,9,9015);
+        return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
     }
 
     /**
@@ -80,11 +147,9 @@ class Menu extends Base
                     $parent_name[$v['id']] = $v['name'];
                     $parent_id = $v['id'];
                     unset($data[$k]);
-                    goto loop;
                 }
             }
 
-            loop:
             //已根据parent_id排序
             foreach($data as $k1 => $v1) {
                 if($v1['parent_id'] == $parent_id) {
@@ -103,5 +168,30 @@ class Menu extends Base
         }
         cache(CacheKey::BEHIND_CACHE['menu_list'], $menu);
         return $menu;
+    }
+
+    /**
+     * 缓存菜单树
+     */
+    protected function cache_tree_menu()
+    {
+        $data = Db::name('admin_menu')->order('parent_id,sort')->select();
+        $menu = [];
+
+        $sort = function ($data , $parent_id = 0, $level = 0,$parent_name = '') use (&$menu,&$sort) {
+            foreach($data as $k => $v) {
+                if($v['parent_id'] == $parent_id) {
+                    $v['level'] = $level;
+                    $v['parent_name'] = $parent_name;
+                    $menu[] = $v;
+                    unset($data[$k]);
+                    $sort($data,$v['id'],$level+1,$v['name']);
+                }
+            }
+        };
+        $sort($data);
+        cache(CacheKey::BEHIND_CACHE['menu_tree'], $menu);
+        return $menu;
+
     }
 }
