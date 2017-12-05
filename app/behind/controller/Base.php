@@ -192,6 +192,9 @@ class Base extends CBase
     	$parents = [];
     	$menus = [];
     	foreach($data as $v) {
+            if($v['status'] == 1) {
+                $v['name'] .= '(已禁用)';
+            }
     	    if($v['parent_id'] == 0 && !array_key_exists($v['name'],$menus)) {
     	        $parents[$v['id']] = $v['name'];
                 $menus[$v['name']] = [];

@@ -16,12 +16,13 @@ class Menu extends Base
 {
     public function index()
     {
-        if($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) goto assign;
-        $menu = $this->cache_menu();
+        cache(CacheKey::BEHIND_CACHE['menu_tree'],null);
+        if($menu = cache(CacheKey::BEHIND_CACHE['menu_tree'])) goto assign;
+        $menu = $this->cache_tree_menu();
         assign:
         foreach($menu as $k => $v) {
             if($v['parent_id'] != 0) {
-                $menu[$k]['name'] = '|----' . $v['name'];
+                $menu[$k]['name'] = '|' . str_repeat('------',(int)$v['level']) . $v['name'];
             }
             $menu[$k]['status_name'] = StatusCode::menu_status[$v['status']];
         }
@@ -59,7 +60,9 @@ class Menu extends Base
             return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code],'data'=> !empty($id)?url('auth/auth_by_menu',['menu_id'=>$id]):null]);
         }
         else {
-            $menu = cache(CacheKey::BEHIND_CACHE['menu_list']);
+            if(($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) == false) {
+                $menu = $this->cache_menu();
+            }
             foreach($menu as $k => $v) {
                 if($v['parent_id'] == 0) {
                     $menu[$k]['name'] = '|-' . $v['name'];
@@ -91,11 +94,9 @@ class Menu extends Base
                     $parent_name[$v['id']] = $v['name'];
                     $parent_id = $v['id'];
                     unset($data[$k]);
-                    goto loop;
                 }
             }
 
-            loop:
             //已根据parent_id排序
             foreach($data as $k1 => $v1) {
                 if($v1['parent_id'] == $parent_id) {
@@ -114,5 +115,30 @@ class Menu extends Base
         }
         cache(CacheKey::BEHIND_CACHE['menu_list'], $menu);
         return $menu;
+    }
+
+    /**
+     * 缓存菜单树
+     */
+    protected function cache_tree_menu()
+    {
+        $data = Db::name('admin_menu')->order('parent_id,sort')->select();
+        $menu = [];
+
+        $sort = function ($data , $parent_id = 0, $level = 0,$parent_name = '') use (&$menu,&$sort) {
+            foreach($data as $k => $v) {
+                if($v['parent_id'] == $parent_id) {
+                    $v['level'] = $level;
+                    $v['parent_name'] = $parent_name;
+                    $menu[] = $v;
+                    unset($data[$k]);
+                    $sort($data,$v['id'],$level+1,$v['name']);
+                }
+            }
+        };
+        $sort($data);
+        cache(CacheKey::BEHIND_CACHE['menu_tree'], $menu);
+        return $menu;
+
     }
 }

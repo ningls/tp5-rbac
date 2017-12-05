@@ -48,8 +48,9 @@ class System extends Base
         $menu_model = new AdminMenu();
         $menu_data = $menu_model->show_son_menus();
         foreach($menu_data as $k => $v) {
+//            $menu_data[$k]['name'] .= $v['url'];
             if($v['status'] != 0) {
-                $menu_data[$k]['admin_name'] .= StatusCode::menu_status[$v['status']];
+                $menu_data[$k]['name'] .= StatusCode::menu_status[$v['status']];
             }
         }
         foreach($user_data as $k => $v) {

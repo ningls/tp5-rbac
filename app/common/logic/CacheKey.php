@@ -8,7 +8,8 @@ class CacheKey
 {
 	//===========================================hebind============================================
 	const BEHIND_CACHE = [
-		'menu_list' => 'menu_list',
+		'menu_list' => 'menu_list',  //两级菜单
+        'menu_tree' => 'menu_tree',  //多级菜单
 	];
 
 	//session 对照
