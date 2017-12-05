@@ -74,6 +74,7 @@ CREATE TABLE [[PREFIX]]admin_log(
     `admin_id` tinyint(3) unsigned not null default 0 comment '管理员id',
     `view_name` varchar(50) not null default '' comment '访问名称',
     `view_url` varchar(200) not null default '' comment '访问地址',
+    `info` VARCHAR(200) not null default '' comment '信息',
     `view_at` int(10) unsigned not null default 0 comment '访问时间',
     `view_ip` char(20) not null default '' comment '访问ip',
     key `admin_id`(`admin_id`),

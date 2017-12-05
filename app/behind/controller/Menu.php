@@ -33,19 +33,19 @@ class Menu extends Base
             $data['url'] = strtolower($request->post('url',''));
             $data['sort'] = $request->post('sort',0,'intval');
             $data['parent_id'] = $request->post('parent_id',0,'intval');
-            if( $data['name'] == false && $code = 9010 || $data['url'] == false && $code = 9011 || !preg_match('/[\w]+\/[\w]+/',$data['url']) && $code = 9012 ) {
+            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 || !preg_match('/[\w]+\/[\w]+/',$data['url']) && $this->code = 9012 ) {
                 goto res;
             }
             $data['add_time'] = time();
             try{
                 Db::name('menu')->insert($data);
-                $code = 0;
+                $this->code = 0;
             }
             catch(\PDOException $e) {
-                $code = 9999;
+                $this->code = 9999;
             }
             res:
-            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]);
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
         }
         else {
             $menu = cache(CacheKey::BEHIND_CACHE['menu_list']);

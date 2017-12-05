@@ -11,31 +11,55 @@
                             <div class="table-responsive col-lg-10 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;" >
 								<form method="get">
 									<div class="row">
-										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
-											<label">开始时间:</label>
+										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 5px 0px;" >
+											<label>开始时间:</label>
 										    <div class="layui-input-inline">
 										        <input type="text" class="layui-input" id="start_time" name="start_time" placeholder="yyyy-MM-dd" value="{$where.start_time|default=''}">
 										    </div>
 										</div>
-										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
-										    <label">截止时间:</label>
+										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 5px 0px;" >
+										    <label>截止时间:</label>
 										    <div class="layui-input-inline">
 										        <input type="text" class="layui-input" id="end_time" name="end_time" placeholder="yyyy-MM-dd" value="{$where.end_time|default=''}">
 										    </div>
 										</div>	 
 									</div>
+                                    <div class="row">
+                                        <div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin:5px 0px;" >
+                                            <label>操作行为:</label>
+                                            <div class="layui-input-inline">
+                                                <select name="url" class="layui-select">
+                                                    <option value="">------请选择------</option>
+                                                    {volist name="menu_data" id="m"}
+                                                    <option value="{$m.url}" {if condition="$where.view_url eq $m.url"}selected{/if}>{$m.name}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin:5px 0px;" >
+                                            <label>操作人员:</label>
+                                            <div class="layui-input-inline">
+                                                <select name="admin_id" class="layui-select">
+                                                    <option value="0">------请选择------</option>
+                                                    {volist name="user_data" id="u"}
+                                                        <option value="{$u.id}" {if condition="$where.admin_id eq $u.id"}selected{/if}>{$u.admin_name}</option>
+                                                    {/volist}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
 									<div class="row">
 										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
-											<label>每页条数</label>
+											<label>每页条数:</label>
 										    <div class="layui-input-inline">
-										        <input type="number" name="number_page" value="{$where.page|default=0}">
+										        <input type="number" name="number_page" class="layui-input" value="{$where.page|default=0}">
 										    </div>
 										</div>
 										<div class="col-lg-5 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;margin: 0px;" >
 										    <button type="submit" class="btn btn-primary ">查找</a>
 										</div>	 
 									</div>
-									
+
 								</form>
                             </div>
                         </div>
@@ -46,6 +70,7 @@
                                     <th>id</th>
                                     <th>访问地址</th>
                                     <th>访问名称</th>
+                                    <th>信息</th>
                                     <th>操作者</th>
                                     <th>访问时间</th>
                                     <th>访问ip</th>
@@ -57,6 +82,7 @@
                                         <td>{$d.id}</td>
                                         <td>{$d.view_url}</td>
                                         <td>{$d.view_name}</td>
+                                        <th>{$d.info|default=''}</th>
                                         <td>{$d.admin_name}</td>
                                         <td>{$d.view_at|date="Y-m-d H:i:s",###}</td>
                                         <td>{$d.view_ip}</td>
