@@ -11,6 +11,10 @@
                             {auth name="menu/add_menu"}
                                 <a href="{:url('add_menu')}" class="btn btn-primary ">新增菜单</a>
                             {/auth}
+
+                            {auth name="auth/auth_by_menu"}
+                            <a href="{:url('auth/auth_by_menu')}" class="btn btn-primary ">菜单权限</a>
+                            {/auth}
                             <hr>
                         </div>
                         <table class="table table-bordered">
@@ -34,7 +38,7 @@
                                         <td>{$m.url}</td>
                                         <td>{$m.parent_name|default="顶级菜单"}</td>
                                         <td>{$m.sort}</td>
-                                        <td>{$m.status}</td>
+                                        <td>{$m.status_name}</td>
                                         <td>{$m.add_time|date="Y-m-d H:i:s",###}</td>
                                         <td>
                                         </td>

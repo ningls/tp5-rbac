@@ -10,7 +10,7 @@ use think\Session;
 class Base extends CBase
 {
 	//状态码
-	protected $code;
+	protected $code = 0;
 	//错误页面信息 todo
     protected $error_msg;
 	//全局设置

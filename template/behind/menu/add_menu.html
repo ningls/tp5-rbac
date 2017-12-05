@@ -9,27 +9,30 @@
                     <div class="table-responsive col-lg-6" tabindex="1" style="overflow: hidden; outline: none;" >
                        <form role="form" method="post">
                             <div class="form-group">
-                                <label for="admin_user">管理员账号</label>
-                                <input type="text" class="form-control" required id="admin_user" name="admin_user" placeholder="管理员账号">
+                                <label for="name">菜单名称</label>
+                                <input type="text" class="form-control" required id="name" name="name" placeholder="菜单名称">
                             </div>
                             <div class="form-group">
-                                <label for="admin_pass">管理员密码</label>
-                                <input type="password" class="form-control" required id="admin_pass" name="admin_pass" placeholder="管理员密码">
-                            </div>
-                            <div class="form-group">
-                                <label for="admin_pass2">重复密码</label>
-                                <input type="password" class="form-control" required id="admin_pass2" placeholder="重复密码">
-                            </div>
-                            <div class="form-group">
-                                <label for="admin_name">管理员姓名</label>
-                                <input type="text" class="form-control" required id="admin_name" name="admin_name" placeholder="管理员姓名">
-                            </div>
-                            <div class="form-group">
-                                <label for="admin_phone">管理员手机号</label>
-                                <input type="number" required class="form-control" id="admin_phone" name="admin_phone" placeholder="管理员手机号">
+                                <label for="parent">所属分类</label>
+                                <select id="parent" name="parent_id" class="form-control m-bot15">
+                                    <option value="0">顶级分类</option>
+                                    {volist name="menu" id="m"}
+                                    <option value="{$m.id}">{$m.name}</option>
+                                    {/volist}
+                                </select>
                             </div>
 
-                            <button type="submit" class="btn btn-info">提交</button>
+                            <div class="form-group" id="menu_url" hidden>
+                                <label for="url">菜单地址</label>
+                                <input type="text" class="form-control" id="url" hidden name="url" placeholder="aaa/bbb格式">
+                            </div>
+                            <div class="form-group">
+                                <label for="sort">排序</label>
+                                <input type="number" class="form-control" required id="sort" name="sort" placeholder="排序">
+                            </div>
+
+                            <button id="submit" class="btn btn-info">提交</button>
+                            <a href="{:url('menu/index')}" class="btn btn-info">取消</a>
                         </form>
 
                     </div>
@@ -44,7 +47,44 @@
 
 {block name="js"}
 <script>
-
+    $(function(){
+        $('#parent').on('change',function(){
+            if($(this).val() == 0) {
+                $('#url').attr('name','');
+                $('#menu_url').hide();
+            }
+            else {
+                $('#url').attr('name','url');
+                $('#menu_url').show();
+            }
+        })
+        $('#submit').on('click',function(){
+            var data = {
+                name:$('#name').val(),
+                parent_id:$('#parent').val(),
+                url:$('#url').val(),
+                sort:$('#sort').val()
+            }
+            var url = "{:url('menu/add_menu')}";
+            $.post(url,data,function(res){
+                if(res.code != 0) {
+                    layer.alert(res.msg, {
+                        icon: 5
+                    })
+                }
+                else {
+                    layer.confirm('新增菜单成功，是否前往权限分配', {
+                        btn: ['是','否'] //按钮
+                    }, function(){
+                        location.href= res.data;
+                    }, function(){
+                        location.href = "{:url('menu/index')}"
+                    });
+                }
+            },'json')
+            return false;
+        })
+    }())
 </script>
 {/block}
 

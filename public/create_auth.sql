@@ -47,7 +47,7 @@ CREATE TABLE [[PREFIX]]admin_menu(
     key `parent`(`parent_id`)
 )charset = 'utf8' engine = innodb comment = '菜单表';
 
-/* 插入全局表初始数据 */
+/* 插入菜单表初始数据 */
 INSERT INTO [[PREFIX]]admin_menu(`name`,`url`,`parent_id`,`sort`,`add_time`) values
 ('系统管理','',0,99,unix_timestamp(now())),
 ('菜单管理','menu/index',1,1,unix_timestamp(now())),
@@ -55,12 +55,14 @@ INSERT INTO [[PREFIX]]admin_menu(`name`,`url`,`parent_id`,`sort`,`add_time`) val
 ('用户管理','role/admin_user',1,3,unix_timestamp(now())),
 ('行为日志','system/log',1,4,unix_timestamp(now())),
 ('系统配置','system/config',1,5,unix_timestamp(now())),
-('新增菜单','menu/add_menu',2,1,unix_timestamp(now()));
+('新增菜单','menu/add_menu',2,1,unix_timestamp(now())),
+('菜单权限','auth/auth_by_menu',2,2,unix_timestamp(now())),
+('角色权限','auth/auth_by_role',3,2,unix_timestamp(now()));
 
 /* 权限表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_role_auth;
 CREATE TABLE [[PREFIX]]admin_role_auth(
-    `id` tinyint(3) not null PRIMARY KEY auto_increment comment '主键',
+    `id` tinyint(3) unsigned not null PRIMARY KEY auto_increment comment '主键',
 	`role_id` tinyint(3) unsigned not null default 0 comment '角色id',
 	`role_auth` varchar(5000) not null default '' comment '角色规则-json格式',
     `update_at` int(10) unsigned not null default 0 comment '修改时间',
@@ -70,7 +72,7 @@ CREATE TABLE [[PREFIX]]admin_role_auth(
 /* 行为日志表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_log;
 CREATE TABLE [[PREFIX]]admin_log(
-    `id` tinyint(3) not null PRIMARY KEY auto_increment comment '主键',
+    `id` int not null PRIMARY KEY auto_increment comment '主键',
     `admin_id` tinyint(3) unsigned not null default 0 comment '管理员id',
     `view_name` varchar(50) not null default '' comment '访问名称',
     `view_url` varchar(200) not null default '' comment '访问地址',
@@ -84,7 +86,7 @@ CREATE TABLE [[PREFIX]]admin_log(
 /* 短信验证码表 */
 DROP TABLE IF EXISTS [[PREFIX]]sms_code;
 CREATE TABLE [[PREFIX]]sms_code(
-    `id` tinyint(3) not null PRIMARY KEY auto_increment comment '主键',
+    `id` int not null PRIMARY KEY auto_increment comment '主键',
     `code` mediumint(8) unsigned not null default 0 comment '验证码code，最多8位',
     `phone` varchar(15) not null default '' comment '手机号',
     `expire_time` int(10) unsigned not null default 0 comment '过期时间',
@@ -95,7 +97,7 @@ CREATE TABLE [[PREFIX]]sms_code(
 /* 全局设置表 */
 DROP TABLE IF EXISTS [[PREFIX]]global_setting;
 CREATE TABLE [[PREFIX]]global_setting(
-	`id` tinyint(3) not null PRIMARY KEY auto_increment comment '主键',
+	`id` tinyint(3) unsigned not null PRIMARY KEY auto_increment comment '主键',
 	`key` varchar(50) not null default '' comment '配置key',
   `value` varchar(200) not null default '' comment '配置值',
   `comment` varchar(200) not null default '' comment '配置说明',
