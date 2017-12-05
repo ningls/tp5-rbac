@@ -75,8 +75,6 @@
             layer.confirm('是否确定操作？',{
                 btn:['确定','取消']
             },function(){
-                //ajax操作
-                alert(1);
                 var data = $(this).attr('ajax-data');
                 if(data == 'undefined' || data == false ) {
                     layer.msg('没有数据');
@@ -86,7 +84,7 @@
                 $.post(url,data,function(e){
                     if(e.code == 0 ) {
                         layer.msg('操作成功');
-                        window.reload();
+                        setTimeout("location.reload()",1000);
                     }
                     else {
                         layer.msg(e.msg);

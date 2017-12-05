@@ -245,8 +245,9 @@ class Base extends CBase
     * 写入日志
     */
     protected function act_log(string $url,string $name, $info,int $user_id) {
+        $user_id = $user_id??0;
     	$data['view_url'] = $url;
-    	$data['view_name'] = $name;
+    	$data['view_name'] = $name??'';
     	$data['admin_id'] = $user_id;
     	$data['info'] = $info;
     	$data['view_at'] = time();
@@ -295,7 +296,8 @@ class Base extends CBase
     {
         if($this->global_setting['log_open']) {
             if(request()->isGet()) {
-                $this->act_log($this->view_url,$this->view_name,'访问',session('user.id'));
+                $msg = $this->code?ErrorCode::error[$this->code]:'访问';
+                $this->act_log($this->view_url,$this->view_name,$msg,session('user.id'));
             }elseif (request()->isPost()) {
                 $this->view_name .= ($this->code?'失败':'成功');
                 $this->act_log($this->view_url,$this->view_name,ErrorCode::error[$this->code],session('user.id'));

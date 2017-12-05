@@ -7,34 +7,34 @@
             <section class="panel">
                 <div class="panel-body">
                     <div class="table-responsive col-lg-6" tabindex="1" style="overflow: hidden; outline: none;" >
-                       <form role="form" method="post">
-                            <div class="form-group">
-                                <label for="name">菜单名称</label>
-                                <input type="text" class="form-control" required id="name" name="name" placeholder="菜单名称">
-                            </div>
-                            <div class="form-group">
-                                <label for="parent">所属分类</label>
-                                <select id="parent" name="parent_id" class="form-control m-bot15">
-                                    <option value="0">顶级分类</option>
-                                    {volist name="menu" id="m"}
-                                    <option value="{$m.id}">{$m.name}</option>
-                                    {/volist}
-                                </select>
-                            </div>
 
-                            <div class="form-group" id="menu_url" hidden>
-                                <label for="url">菜单地址</label>
-                                <input type="text" class="form-control" id="url" hidden name="url" placeholder="aaa/bbb格式">
-                            </div>
-                            <div class="form-group">
-                                <label for="sort">排序</label>
-                                <input type="number" class="form-control" required id="sort" name="sort" placeholder="排序">
-                            </div>
+                        <div class="form-group">
+                            <label for="name">菜单名称</label>
+                            <input type="text" class="form-control" required id="name" name="name" placeholder="菜单名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="parent">所属分类</label>
+                            <select id="parent" name="parent_id" class="form-control m-bot15">
+                                <option value="0">顶级分类</option>
+                                {volist name="menu" id="m"}
+                                <option value="{$m.id}">{$m.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
 
-                            <button id="submit" class="btn btn-info">提交</button>
+                        <div class="form-group" id="menu_url" hidden>
+                            <label for="url">菜单地址</label>
+                            <input type="text" class="form-control" id="url" hidden name="url" placeholder="aaa/bbb格式">
+                        </div>
+                        <div class="form-group">
+                            <label for="sort">排序</label>
+                            <input type="number" class="form-control" required id="sort" name="sort" placeholder="排序">
+                        </div>
+
+                        <div class="row">
+                            <button id="sub" class="btn btn-info">提交</button>
                             <a href="{:url('menu/index')}" class="btn btn-info">取消</a>
-                        </form>
-
+                        </div>
                     </div>
                 </div>
             </section>
@@ -58,7 +58,7 @@
                 $('#menu_url').show();
             }
         })
-        $('#submit').on('click',function(){
+        $('#sub').on('click',function(){
             var data = {
                 name:$('#name').val(),
                 parent_id:$('#parent').val(),
@@ -66,6 +66,11 @@
                 sort:$('#sort').val()
             }
             var url = "{:url('menu/add_menu')}";
+            if(data.url != false) {
+                if(!data.url.match('/^[\w]+\/[\w]+$/') ) {
+                    layer.alert('url格式错误')
+                }
+            }
             $.post(url,data,function(res){
                 if(res.code != 0) {
                     layer.alert(res.msg, {

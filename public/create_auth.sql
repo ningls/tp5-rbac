@@ -58,6 +58,7 @@ INSERT INTO [[PREFIX]]admin_menu(`name`,`url`,`parent_id`,`sort`,`add_time`) val
 ('新增菜单','menu/add_menu',2,1,unix_timestamp(now())),
 ('删除菜单','menu/del_menu',2,1,unix_timestamp(now())),
 ('编辑菜单','menu/edit_menu',2,1,unix_timestamp(now())),
+('禁用菜单','menu/disable_menu',2,1,unix_timestamp(now())),
 ('菜单权限','auth/auth_by_menu',2,2,unix_timestamp(now())),
 ('角色权限','auth/auth_by_role',3,2,unix_timestamp(now()));
 

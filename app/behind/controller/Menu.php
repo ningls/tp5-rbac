@@ -77,6 +77,59 @@ class Menu extends Base
     }
 
     /**
+     * 编辑菜单 todo
+     */
+    public function edit_menu()
+    {
+        $id = request()->param('id',0,'intval');
+
+        if(!$id) {
+            $this->code = 9013;
+            $this->error('非法参数',url('index'));
+        }
+        if(request()->isAjax()) {
+
+        }
+        elseif(request()->isGet()){
+            $info = Db::name('admin_menu')->find($id);
+            dump($info);
+        }
+    }
+
+    /**
+     * 禁用/激活菜单
+     */
+    public function disable_menu()
+    {
+
+        $id = request()->param('id',0,'intval');
+        $status = request()->param('status',0,'intval');
+        if(!$id || !in_array($status,[0,1])) {
+            $this->code = 9013;
+            $this->error('非法参数',url('index'));
+        }
+        $set_status = $status?0:1;
+        $model = new MenuModel();
+        $this->code = $model->set_menu_status($id,$set_status,9014);
+        return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
+    }
+
+    /**
+     * 删除菜单
+     */
+    public function del_menu()
+    {
+        $id = request()->param('id',0,'intval');
+        if(!$id) {
+            $this->code = 9013;
+            $this->error('非法参数',url('index'));
+        }
+        $model = new MenuModel();
+        $this->code = $model->set_menu_status($id,9,9015);
+        return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
+    }
+
+    /**
     * 缓存菜单
     */
     protected function cache_menu()

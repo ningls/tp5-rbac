@@ -23,4 +23,13 @@ class AdminMenu extends Model
     {
         return $this->where(['parent_id'=>['neq',0]])->order('status')->select();
     }
+
+    /**
+     * 设置status
+     */
+    public function set_menu_status($id,$status,$code)
+    {
+        return $this->isUpdate()->save(['status'=>$status],['id'=>$id])?0:$code;
+    }
+
 }
