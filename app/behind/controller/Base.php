@@ -218,7 +218,7 @@ class Base extends CBase
     {
         $act = $this->view_url;
 
-        $sql = "select url,parent_id from {$this->_prefix}admin_menu where id = (select parent_id from {$this->_prefix}admin_menu where url = '{$act}')";
+        $sql = "select url,parent_id from {$this->_prefix}admin_menu where id in (select parent_id from {$this->_prefix}admin_menu where url = '{$act}')";
         $menu_info = Db::Query($sql)[0];
         if($menu_info['parent_id'] != 0) {
         	$this->view_name = $name = Db::name('admin_menu')->where(['url'=>$act])->value('name');
