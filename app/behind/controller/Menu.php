@@ -51,6 +51,10 @@ class Menu extends Base
                     $this->code = 9012;
                     goto res;
                 }
+                if(Db::name('admin_menu')->where(['url'=>$data['url']])->find()) {
+                    $this->code = 9018;
+                    goto res;
+                }
             }
             $data['add_time'] = time();
             try{
@@ -104,6 +108,10 @@ class Menu extends Base
             if($data['url'] != '') {
                 if(!preg_match('/^[\w]+\/[\w]+$/',$data['url'])) {
                     $this->code = 9012;
+                    goto res;
+                }
+                if(Db::name('admin_menu')->where(['url'=>$data['url'],'id'=>['neq',$id]])->find()) {
+                    $this->code = 9018;
                     goto res;
                 }
             }

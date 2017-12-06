@@ -163,6 +163,7 @@ class Base extends CBase
 
     /**
     * 判断是否有执行权
+     * todo 判断菜单状态 跳转错误页面
     */
     protected function view_auth()
     {
