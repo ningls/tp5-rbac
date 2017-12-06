@@ -26,10 +26,36 @@ class AdminMenu extends Model
 
     /**
      * 设置status
+     * @param $id
+     * @param $status
+     * @param $code
+     * @return int
      */
     public function set_menu_status($id,$status,$code)
     {
-        return $this->isUpdate()->save(['status'=>$status],['id'=>$id])?0:$code;
+        try{
+            return $this->isUpdate()->save(['status'=>$status],['id'=>$id])?0:9017;
+        }catch(\PDOException $e){
+            return $code;
+        }
+
+    }
+
+    /**
+     * 更新菜单信息
+     * @param $data
+     * @param $id
+     * @param $code
+     * @return int
+     */
+    public function update_menu($data,$id,$code)
+    {
+        try{
+            return $this->isUpdate()->save($data,['id'=>$id])?0:9017;
+        }catch(\PDOException $e){
+            return $code;
+        }
+
     }
 
 }

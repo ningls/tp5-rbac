@@ -58,6 +58,13 @@
                 $('#menu_url').show();
             }
         })
+        $('#url').on('blur',function(){
+            if(!$(this).val().match(/^[\w]+\/[\w]+$/)) {
+                layer.tips('url格式错误', '#url', {
+                    tips: [3, '#000'] //还可配置颜色
+                });
+            }
+        })
         $('#sub').on('click',function(){
             var data = {
                 name:$('#name').val(),
@@ -66,9 +73,10 @@
                 sort:$('#sort').val()
             }
             var url = "{:url('menu/add_menu')}";
-            if(data.url != false) {
-                if(!data.url.match('/^[\w]+\/[\w]+$/') ) {
+            if(data.parent_id != 0) {
+                if(!data.url.match(/^[\w]+\/[\w]+$/) ) {
                     layer.alert('url格式错误')
+                    return false;
                 }
             }
             $.post(url,data,function(res){

@@ -178,11 +178,13 @@ class Base extends CBase
      */
     protected function set_menu()
     {
+        session('menu',null);
         if($menus = session("menu")) goto menu;
 
         //调试模式可见禁用菜单
     	if(config('app_debug')) {
     		$condition['status'] = ['in',[0,1]];
+//            $condition['status'] = ['in',[0]];
     	}
     	else {
     		$condition['status'] = 0;
