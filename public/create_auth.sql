@@ -39,7 +39,7 @@ CREATE TABLE [[PREFIX]]admin_menu(
     `name` varchar(50) not null default '' comment '菜单名称',
     `url` varchar(200) not null default '' comment '控制地址',
     `parent_id` tinyint(3) unsigned not null default 0 comment '父id',
-    `status` tinyint(3) unsigned not null default 0 comment '状态 0-正常，1-禁用,8-测试,9-删除',
+    `status` tinyint(3) unsigned not null default 0 comment '状态 0-正常，1-禁用,9-删除',
     `sort` tinyint(3) unsigned not null default 0 comment '排序',
     `add_time` int(10) unsigned not null default 0 comment '添加时间',
     key `status`(`status`),
@@ -56,11 +56,19 @@ INSERT INTO [[PREFIX]]admin_menu(`name`,`url`,`parent_id`,`sort`,`add_time`) val
 ('行为日志','system/log',1,4,unix_timestamp(now())),
 ('系统配置','system/config',1,5,unix_timestamp(now())),
 ('新增菜单','menu/add_menu',2,1,unix_timestamp(now())),
-('删除菜单','menu/del_menu',2,1,unix_timestamp(now())),
-('编辑菜单','menu/edit_menu',2,1,unix_timestamp(now())),
-('禁用菜单','menu/disable_menu',2,1,unix_timestamp(now())),
-('菜单权限','auth/auth_by_menu',2,2,unix_timestamp(now())),
-('角色权限','auth/auth_by_role',3,2,unix_timestamp(now()));
+('删除菜单','menu/del_menu',2,2,unix_timestamp(now())),
+('编辑菜单','menu/edit_menu',2,3,unix_timestamp(now())),
+('禁用菜单','menu/disable_menu',2,4,unix_timestamp(now())),
+('菜单权限','auth/auth_by_menu',2,5,unix_timestamp(now())),
+('角色权限','auth/auth_by_role',3,1,unix_timestamp(now())),
+('新增角色','role/add_role',3,2,unix_timestamp(now())),
+('删除角色','role/del_role',3,3,unix_timestamp(now())),
+('禁用角色','role/disable_role',3,4,unix_timestamp(now())),
+('编辑角色','role/edit_role',3,5,unix_timestamp(now())),
+('新增管理用户','role/add_admin_user',4,1,unix_timestamp(now())),
+('删除管理用户','role/del_admin_user',4,2,unix_timestamp(now())),
+('禁用管理用户','role/disable_admin_user',4,3,unix_timestamp(now())),
+('编辑管理用户','role/edit_admin_user',4,4,unix_timestamp(now()));
 
 /* 权限表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_role_auth;
@@ -116,4 +124,6 @@ INSERT INTO [[PREFIX]]global_setting(`key`,`value`,`comment`) values
 ('sms_expire',3000,'短信验证码过期时间'),
 ('page_limit',15,'后台数据每页页数'),
 ('api_auth_open',0,'是否开启api权限验证，1-是，0-否'),
-('show_del_menu',1,'菜单管理是否显示已删除菜单，1-是，0-否');
+('show_del_menu',0,'菜单管理是否显示已删除菜单，1-是，0-否'),
+('show_del_role',0,'角色管理是否显示已删除角色，1-是，0-否'),
+('show_del_user',0,'用户管理是否显示已删除用户，1-是，0-否');

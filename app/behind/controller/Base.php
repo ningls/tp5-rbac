@@ -168,6 +168,10 @@ class Base extends CBase
     protected function view_auth()
     {
     	$this->view_url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
+    	if($this->view_url == 'index/index') {
+    	    $this->view_name = '首页';
+    	    return true;
+        }
     	if(!in_array($this->view_url, session('auth'))) {
     	    $this->code = 10000;
     		exit(json_encode(['code'=>$this->code,'msg'=>ErrorCode::error[10000]]));
@@ -219,6 +223,10 @@ class Base extends CBase
     */
     protected function now_act()
     {
+        if($this->view_url == 'index/index') {
+            $this->act = ['parent_name'=>'','url'=>$this->view_url,'name'=>'首页'];
+            goto assign;
+        }
         $act = $this->view_url;
 
         $sql = "select url,parent_id from {$this->_prefix}admin_menu where id in (select parent_id from {$this->_prefix}admin_menu where url = '{$act}')";
@@ -241,6 +249,7 @@ class Base extends CBase
         	$this->act['name'] = $name??'';
         	$this->view_name = $name??'';
         }
+        assign:
         $this->assign('now_act',$this->act);
     }
 

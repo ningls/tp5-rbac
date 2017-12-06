@@ -48,12 +48,12 @@ class System extends Base
         $menu_data = $menu_model->show_son_menus();
         foreach($menu_data as $k => $v) {
             if($v['status'] != 0) {
-                $menu_data[$k]['name'] .= StatusCode::menu_status[$v['status']];
+                $menu_data[$k]['name'] = $menu_data[$k]['name'] . '(已' . StatusCode::menu_status[$v['status']] . ')';
             }
         }
         foreach($user_data as $k => $v) {
             if($v['status'] != 0) {
-                $user_data[$k]['admin_name'] .= StatusCode::admin_user_status[$v['status']];
+                $user_data[$k]['admin_name'] = $user_data[$k]['admin_name'] . '(已' . StatusCode::admin_user_status[$v['status']] . ')';
             }
         }
         $this->assign([
