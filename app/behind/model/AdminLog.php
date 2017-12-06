@@ -10,15 +10,9 @@ class AdminLog extends Model
 	public function get_log($limit, $where = [])
 	{
 		$field = 'l.*,u.admin_name';
-		if($where !== []) {
-			return $this->alias('l')->field($field)->join('admin_user u','l.admin_id = u.id')->where($where)->order('l.id desc')->paginate($limit,false,[
-				'query'=>request()->param()
-			]);
-		} 
-		else {
-			return $this->alias('l')->field($field)->join('admin_user u','l.admin_id = u.id')->order('l.id desc')->paginate($limit,false,[
-				'query'=>request()->param()
-			]);
-		}
+	
+		return $this->alias('l')->field($field)->join('admin_user u','l.admin_id = u.id')->where($where)->order('l.id desc')->paginate($limit,false,[
+			'query'=>request()->param()
+		]);		
 	}
 }

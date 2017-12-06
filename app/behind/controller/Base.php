@@ -1,10 +1,10 @@
 <?php
 namespace app\behind\controller;
-use \app\common\controller\CBase;
+use app\common\controller\CBase;
 use app\common\logic\ErrorCode;
-use \think\Request;
-use \think\Db;
-use \app\common\logic\CacheKey;
+use think\Request;
+use think\Db;
+use app\common\logic\CacheKey;
 use think\Session;
 
 class Base extends CBase

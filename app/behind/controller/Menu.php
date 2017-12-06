@@ -1,11 +1,11 @@
 <?php
 namespace app\behind\controller;
-use \app\behind\model\AdminMenu as MenuModel;
-use \app\common\logic\ErrorCode;
-use  \app\common\logic\StatusCode;
-use  \app\common\logic\CacheKey;
-use \think\Db;
-use \think\Request;
+use app\behind\model\AdminMenu as MenuModel;
+use app\common\logic\ErrorCode;
+use app\common\logic\StatusCode;
+use app\common\logic\CacheKey;
+use think\Db;
+use think\Request;
 use think\Session;
 
 /**

@@ -1,10 +1,10 @@
 <?php
 namespace app\behind\controller;
 use app\behind\model\AdminMenu;
-use \think\Request;
-use \app\behind\model\AdminLog;
-use \app\behind\model\AdminUser;
-use \app\common\logic\StatusCode;
+use think\Request;
+use app\behind\model\AdminLog;
+use app\behind\model\AdminUser;
+use app\common\logic\StatusCode;
 
 class System extends Base
 {

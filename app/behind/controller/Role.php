@@ -4,6 +4,7 @@ namespace app\behind\controller;
 use app\behind\model\AdminRole;
 use app\behind\model\AdminUser;
 use app\common\logic\StatusCode;
+use think\Db;
 
 class Role extends Base
 {
@@ -31,6 +32,8 @@ class Role extends Base
      */
     public function admin_user()
     {
+        $data = Db::name('admin_user')->where([])->select();
+        dump($data);
         $model = new AdminUser();
         $user = $model->get_admin_user($this->global_setting['page_limit']);
         foreach($user as $k => $v) {
@@ -101,6 +104,72 @@ class Role extends Base
      */
     public function del_admin_user()
     {
+
+    }
+
+    /**
+     * 获取下级角色
+     */
+    protected function get_tree_role()
+    {
+        if(!$this->global_setting['show_del_menu']) {
+            $data = Db::name('admin_menu')->where(['status'=>['neq',9]])->order('parent_id,sort')->select();
+        }
+        else{
+            $data = Db::name('admin_menu')->order('parent_id,sort')->select();
+        }
+        $menu = [];
+
+        $sort = function ($data , $parent_id = 0, $level = 0,$parent_name = '') use (&$menu,&$sort) {
+            foreach($data as $k => $v) {
+                if($v['status'] != 0) {
+                    $v['name'] = $v['name'] . '(' . StatusCode::menu_status[$v['status']] . ')';
+                }
+                if($v['parent_id'] == $parent_id) {
+                    $v['level'] = $level;
+                    $v['parent_name'] = $parent_name;
+                    $menu[] = $v;
+                    unset($data[$k]);
+                    $sort($data,$v['id'],$level+1,$v['name']);
+                }
+            }
+        };
+        $sort($data);
+        cache(CacheKey::BEHIND_CACHE['menu_tree'], $menu);
+        return $menu;
+
+    }
+
+    /**
+     * 获取下级用户
+     */
+    protected function get_tree_user()
+    {
+        if(!$this->global_setting['show_del_menu']) {
+            $data = Db::name('admin_menu')->where(['status'=>['neq',9]])->order('parent_id,sort')->select();
+        }
+        else{
+            $data = Db::name('admin_menu')->order('parent_id,sort')->select();
+        }
+        $menu = [];
+
+        $sort = function ($data , $parent_id = 0, $level = 0,$parent_name = '') use (&$menu,&$sort) {
+            foreach($data as $k => $v) {
+                if($v['status'] != 0) {
+                    $v['name'] = $v['name'] . '(' . StatusCode::menu_status[$v['status']] . ')';
+                }
+                if($v['parent_id'] == $parent_id) {
+                    $v['level'] = $level;
+                    $v['parent_name'] = $parent_name;
+                    $menu[] = $v;
+                    unset($data[$k]);
+                    $sort($data,$v['id'],$level+1,$v['name']);
+                }
+            }
+        };
+        $sort($data);
+        cache(CacheKey::BEHIND_CACHE['menu_tree'], $menu);
+        return $menu;
 
     }
 }

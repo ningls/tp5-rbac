@@ -8,10 +8,14 @@
             <div class="panel-body">
 
                 <div class="table-responsive col-lg-10 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;" >
-                    <div class="row">
-                        <button type="submit" class="btn btn-primary "> 查询</button>
-                        <button class="btn btn-default reset" type="reset"> 重置</button>
+                    <div class="table-responsive col-lg-12" tabindex="1" style="overflow: hidden; outline: none;" >
+                        {auth name="role/add_admin_user"}
+                        <div class="row">
+                            <a href="{:url('role/add_admin_user')}" class="btn btn-primary "> 新增用户</a>
+                        </div>
+                        {/auth}
                     </div>
+                    <hr>
                     <table class="table table-bordered">
                         <thead>
                         <tr>
