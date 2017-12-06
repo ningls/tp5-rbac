@@ -9,47 +9,44 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
-<style>
-	.col-lg-6{
-		margin:100px auto !important;
-		width: 800px;
-		border: 1px solid #eee;
-	}
 
-</style>
-<div class="col-lg-6">
-	<section class="panel">
-		<header class="panel-heading">
-			<h3>后台初始化</h3>
-		</header>
-		<div class="panel-body">
-			<form role="form" method="post">
-				<div class="form-group">
-					<label for="admin_user">管理员账号</label>
-					<input type="text" class="form-control" required id="admin_user" name="admin_user" placeholder="管理员账号">
-				</div>
-				<div class="form-group">
-					<label for="admin_pass">管理员密码</label>
-					<input type="password" class="form-control" required id="admin_pass" name="admin_pass" placeholder="管理员密码">
-				</div>
-				<div class="form-group">
-					<label for="admin_pass2">重复密码</label>
-					<input type="password" class="form-control" required id="admin_pass2" placeholder="重复密码">
-				</div>
-				<div class="form-group">
-					<label for="admin_name">管理员姓名</label>
-					<input type="text" class="form-control" required id="admin_name" name="admin_name" placeholder="管理员姓名">
-				</div>
-				<div class="form-group">
-					<label for="admin_phone">管理员手机号</label>
-					<input type="number" required class="form-control" id="admin_phone" name="admin_phone" placeholder="管理员手机号">
-				</div>
+<div class="row">
+	<div class="col-lg-12">
+		<section class="panel">
+			 <div class="table-responsive col-lg-6 col-lg-offset-3" tabindex="1" style="overflow: hidden; outline: none;" >
+				<header class="panel-heading">
+					<h3>后台初始化</h3>
+				</header>
+				<div class="panel-body">
+					<form role="form" method="post">
+						<div class="form-group">
+							<label for="admin_user">管理员账号</label>
+							<input type="text" class="form-control" required id="admin_user" name="admin_user" placeholder="管理员账号">
+						</div>
+						<div class="form-group">
+							<label for="admin_pass">管理员密码</label>
+							<input type="password" class="form-control" required id="admin_pass" name="admin_pass" placeholder="管理员密码">
+						</div>
+						<div class="form-group">
+							<label for="admin_pass2">重复密码</label>
+							<input type="password" class="form-control" required id="admin_pass2" placeholder="重复密码">
+						</div>
+						<div class="form-group">
+							<label for="admin_name">管理员姓名</label>
+							<input type="text" class="form-control" required id="admin_name" name="admin_name" placeholder="管理员姓名">
+						</div>
+						<div class="form-group">
+							<label for="admin_phone">管理员手机号</label>
+							<input type="number" required class="form-control" id="admin_phone" name="admin_phone" placeholder="管理员手机号">
+						</div>
 
-				<button type="submit" class="btn btn-info" style="float: right">提交</button>
-			</form>
+						<button type="submit" class="btn btn-info" style="float: right">提交</button>
+					</form>
 
-		</div>
-	</section>
+				</div>
+			</div>
+		</section>
+	</div>
 </div>
 <script src="__JS__/behind/jquery.min.js"></script>
 <script src="__LAYER__/layer.js"></script>
