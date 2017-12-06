@@ -247,7 +247,7 @@ class Base extends CBase
     /**
     * 写入日志
     */
-    protected function act_log(string $url,string $name, $info,int $user_id) {
+    protected function act_log(string $url,string $name,string $info,int $user_id) {
         $user_id = $user_id??0;
     	$data['view_url'] = $url;
     	$data['view_name'] = $name??'';
@@ -255,6 +255,7 @@ class Base extends CBase
     	$data['info'] = $info;
     	$data['view_at'] = time();
     	$data['view_ip'] = request()->ip();
+    	$data['data'] = request()->method() . (request()->param()?json_encode(request()->param()):'');
     	try{
     		Db::name('admin_log')->insert($data);
     	}

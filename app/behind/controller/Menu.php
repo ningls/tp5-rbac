@@ -17,7 +17,6 @@ class Menu extends Base
 {
     public function index()
     {
-        $this->reflash_menu();
         if($menu = cache(CacheKey::BEHIND_CACHE['menu_tree'])) goto assign;
         $menu = $this->cache_tree_menu();
         assign:
@@ -194,7 +193,7 @@ class Menu extends Base
     protected function cache_menu()
     {
         $model = new MenuModel();
-        $data = $model->show_menus();
+        $data = $model->show_menus($this->global_setting['show_del_menu']);
         $menu = [];
         $loop_status = 0;
         $parent_id = 0;
@@ -235,7 +234,12 @@ class Menu extends Base
      */
     protected function cache_tree_menu()
     {
-        $data = Db::name('admin_menu')->order('parent_id,sort')->select();
+        if(!$this->global_setting['show_del_menu']) {
+            $data = Db::name('admin_menu')->where(['status'=>['neq',9]])->order('parent_id,sort')->select();
+        }
+        else{
+            $data = Db::name('admin_menu')->order('parent_id,sort')->select();
+        }
         $menu = [];
 
         $sort = function ($data , $parent_id = 0, $level = 0,$parent_name = '') use (&$menu,&$sort) {

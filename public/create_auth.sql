@@ -80,6 +80,7 @@ CREATE TABLE [[PREFIX]]admin_log(
     `view_name` varchar(50) not null default '' comment '访问名称',
     `view_url` varchar(200) not null default '' comment '访问地址',
     `info` VARCHAR(200) not null default '' comment '信息',
+    `data` VARCHAR(3000) not null default '' comment '请求内容',
     `view_at` int(10) unsigned not null default 0 comment '访问时间',
     `view_ip` char(20) not null default '' comment '访问ip',
     key `admin_id`(`admin_id`),
@@ -114,4 +115,5 @@ INSERT INTO [[PREFIX]]global_setting(`key`,`value`,`comment`) values
 ('sms_verify',0,'后台登录短信验证，1-是，0-否'),
 ('sms_expire',3000,'短信验证码过期时间'),
 ('page_limit',15,'后台数据每页页数'),
-('api_auth_open',0,'是否开启api权限验证，1-是，0-否');
+('api_auth_open',0,'是否开启api权限验证，1-是，0-否'),
+('show_del_menu',1,'菜单管理是否显示已删除菜单，1-是，0-否');

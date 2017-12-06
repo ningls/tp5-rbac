@@ -72,6 +72,7 @@
                                     <th>访问地址</th>
                                     <th>访问名称</th>
                                     <th>信息</th>
+                                    <th>内容</th>
                                     <th>操作者</th>
                                     <th>访问时间</th>
                                     <th>访问ip</th>
@@ -84,6 +85,7 @@
                                         <td>{$d.view_url}</td>
                                         <td>{$d.view_name}</td>
                                         <th>{$d.info|default=''}</th>
+                                        <th>{$d.data}</th>
                                         <td>{$d.admin_name}</td>
                                         <td>{$d.view_at|date="Y-m-d H:i:s",###}</td>
                                         <td>{$d.view_ip}</td>
