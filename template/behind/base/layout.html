@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 2 | Dashboard</title>
+    <title>{$system.system_name|default="后台管理"} - 管理后台</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico" />
@@ -34,7 +34,7 @@
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><b>Logo</b></span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><b>{$system.ststem_name|default="后台管理"}</b></span>
+            <span class="logo-lg"><b>{$system.system_name|default="后台管理"}</b></span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">
@@ -319,6 +319,12 @@
             <!-- /.search form -->
             <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu" data-widget="tree">
+                <li class="{if condition="$now_act.url eq 'index/index'"}active{/if}">
+                    <a href="{:url('index/index')}">
+                        <i class="fa fa-home"></i>
+                        <span>首页</span>
+                    </a>
+                </li>
                 {volist name="left_menu" id="m"}
                 <li class="{if condition='$now_act.parent_name eq $key'}active{/if} treeview">
                     <a href="#">

@@ -163,10 +163,15 @@ class Base extends CBase
 
     /**
     * 判断是否有执行权
+     * todo 判断菜单状态 跳转错误页面
     */
     protected function view_auth()
     {
     	$this->view_url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
+    	if($this->view_url == 'index/index') {
+    	    $this->view_name = '首页';
+    	    return true;
+        }
     	if(!in_array($this->view_url, session('auth'))) {
     	    $this->code = 10000;
     		exit(json_encode(['code'=>$this->code,'msg'=>ErrorCode::error[10000]]));
@@ -178,11 +183,13 @@ class Base extends CBase
      */
     protected function set_menu()
     {
+        session('menu',null);
         if($menus = session("menu")) goto menu;
 
         //调试模式可见禁用菜单
     	if(config('app_debug')) {
     		$condition['status'] = ['in',[0,1]];
+//            $condition['status'] = ['in',[0]];
     	}
     	else {
     		$condition['status'] = 0;
@@ -216,6 +223,10 @@ class Base extends CBase
     */
     protected function now_act()
     {
+        if($this->view_url == 'index/index') {
+            $this->act = ['parent_name'=>'','url'=>$this->view_url,'name'=>'首页'];
+            goto assign;
+        }
         $act = $this->view_url;
 
         $sql = "select url,parent_id from {$this->_prefix}admin_menu where id in (select parent_id from {$this->_prefix}admin_menu where url = '{$act}')";
@@ -238,13 +249,14 @@ class Base extends CBase
         	$this->act['name'] = $name??'';
         	$this->view_name = $name??'';
         }
+        assign:
         $this->assign('now_act',$this->act);
     }
 
     /**
     * 写入日志
     */
-    protected function act_log(string $url,string $name, $info,int $user_id) {
+    protected function act_log(string $url,string $name,string $info,int $user_id) {
         $user_id = $user_id??0;
     	$data['view_url'] = $url;
     	$data['view_name'] = $name??'';
@@ -252,6 +264,7 @@ class Base extends CBase
     	$data['info'] = $info;
     	$data['view_at'] = time();
     	$data['view_ip'] = request()->ip();
+    	$data['data'] = request()->method() . (request()->param()?json_encode(request()->param()):'');
     	try{
     		Db::name('admin_log')->insert($data);
     	}

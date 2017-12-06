@@ -22,7 +22,6 @@ class System extends Base
     public function log(Request $request):string
     {
         $model = new adminLog();
-
         $start = $request->get('start_time','');
         $end = $request->get('end_time','');
         $admin_id = $request->get('admin_id',0,'intval');
@@ -48,14 +47,13 @@ class System extends Base
         $menu_model = new AdminMenu();
         $menu_data = $menu_model->show_son_menus();
         foreach($menu_data as $k => $v) {
-//            $menu_data[$k]['name'] .= $v['url'];
             if($v['status'] != 0) {
-                $menu_data[$k]['name'] .= StatusCode::menu_status[$v['status']];
+                $menu_data[$k]['name'] = $menu_data[$k]['name'] . '(已' . StatusCode::menu_status[$v['status']] . ')';
             }
         }
         foreach($user_data as $k => $v) {
             if($v['status'] != 0) {
-                $user_data[$k]['admin_name'] .= StatusCode::admin_user_status[$v['status']];
+                $user_data[$k]['admin_name'] = $user_data[$k]['admin_name'] . '(已' . StatusCode::admin_user_status[$v['status']] . ')';
             }
         }
         $this->assign([
@@ -69,8 +67,10 @@ class System extends Base
                 'admin_id' => $admin_id,
                 'view_url' => $url,
                 'page' => $page
-            ]
+            ],
+            'log_open'=>$this->global_setting['log_open']
         ]);
+        fetch:
         return $this->fetch();
 
     }

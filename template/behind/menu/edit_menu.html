@@ -1,0 +1,101 @@
+{extend name="base:layout"}
+
+{block name="body"}
+<!-- page start-->
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="table-responsive col-lg-6" tabindex="1" style="overflow: hidden; outline: none;" >
+
+                    <div class="form-group">
+                        <input type="hidden" id="menu_id" value="{$info.id}">
+                        <label for="name">菜单名称</label>
+                        <input type="text" class="form-control" required id="name" name="name" value="{$info.name}" placeholder="菜单名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="parent">所属分类</label>
+                        <select id="parent" name="parent_id" class="form-control m-bot15">
+                            <option value="0">顶级分类</option>
+                            {volist name="menu" id="m"}
+                            <option value="{$m.id}" {if condition="$info.parent_id eq $m.id"}selected{/if}>{$m.name}</option>
+                            {/volist}
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="menu_url"  {if condition="$info.parent_id eq 0"}hidden{/if}>
+                        <label for="url">菜单地址</label>
+                        <input type="text" class="form-control" id="url" value="{$info.url}" hidden name="url" placeholder="aaa/bbb格式">
+                    </div>
+                    <div class="form-group">
+                        <label for="sort">排序</label>
+                        <input type="number" class="form-control" required id="sort" name="sort" value="{$info.sort}" placeholder="排序">
+                    </div>
+
+                    <div class="row">
+                        <button id="sub" class="btn btn-info">提交</button>
+                        <a href="{:url('menu/index')}" class="btn btn-info">取消</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- page end-->
+
+
+{/block}
+
+{block name="js"}
+<script>
+    $(function(){
+        $('#parent').on('change',function(){
+            if($(this).val() == 0) {
+                $('#url').attr('name','');
+                $('#menu_url').hide();
+            }
+            else {
+                $('#url').attr('name','url');
+                $('#menu_url').show();
+            }
+        })
+        $('#url').on('blur',function(){
+            if(!$(this).val().match(/^[\w]+\/[\w]+$/)) {
+                layer.tips('url格式错误', '#url', {
+                    tips: [3, '#000'] //还可配置颜色
+                });
+            }
+        })
+        $('#sub').on('click',function(){
+            var data = {
+                name:$('#name').val(),
+                parent_id:$('#parent').val(),
+                url:$('#url').val(),
+                sort:$('#sort').val(),
+                id:$('#menu_id').val()
+            }
+            var url = "{:url('menu/edit_menu')}";
+            if(data.parent_id != 0) {
+                if(!data.url.match(/^[\w]+\/[\w]+$/) ) {
+                    layer.alert('url格式错误')
+                    return false;
+                }
+            }
+            $.post(url,data,function(res){
+                if(res.code != 0) {
+                    layer.alert(res.msg, {
+                        icon: 5
+                    })
+                }
+                else {
+                    layer.msg('操作成功');
+                    setTimeout("location.href= '" + "{:url('menu/index')}" +"'",800);
+                }
+            },'json')
+            return false;
+        })
+    }())
+</script>
+{/block}
+
+

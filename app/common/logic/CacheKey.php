@@ -15,6 +15,7 @@ class CacheKey
 	//session 对照
 	private $session_key_value = [
 		'user' => '用户信息',
-		'auth' => '权限信息'
+		'auth' => '权限信息',
+        'menu' => '后台左侧菜单'
 	];
 }
