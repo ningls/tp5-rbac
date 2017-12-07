@@ -8,6 +8,8 @@ use think\Db;
 use think\Request;
 use app\common\logic\ErrorCode;
 
+//todo 判断操作用户是否为被操作用户的上级角色
+
 class Role extends Base
 {
     /**
@@ -79,11 +81,51 @@ class Role extends Base
     public function add_role(Request $request)
     {
         if($request->isAjax()) {
-
+            $data['role_name'] = $request->post('role_name','','htmlspecialchars');
+            $data['parent_id'] = strtolower($request->post('parent_id',''));
+            $data['sort'] = $request->post('sort',0,'intval');
+            $data['parent_id'] = $request->post('parent_id',0,'intval');
+            $id = 0;
+            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 ) {
+                goto res;
+            }
+            if($data['url'] != '') {
+                if(!preg_match('/^[\w]+\/[\w]+$/',$data['url'])) {
+                    $this->code = 9012;
+                    goto res;
+                }
+                if(Db::name('admin_menu')->where(['url'=>$data['url']])->find()) {
+                    $this->code = 9018;
+                    goto res;
+                }
+            }
+            $data['add_time'] = time();
+            try{
+                $id = Db::name('admin_menu')->insertGetId($data);
+                //重新缓存菜单
+                $this->code = 0;
+            }
+            catch(\PDOException $e) {
+                $this->code = 9999;
+            }
+            res:
+            $this->code != 0 || $this->reflash_menu();
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code],'data'=> !empty($id)?url('auth/auth_by_menu',['menu_id'=>$id]):null]);
         }
-        elseif($request->isGet()) {
-            $admin_role = session('user.role_id');
-            dump($admin_role);
+        else {
+            if(($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) == false) {
+                $menu = $this->cache_menu();
+            }
+            foreach($menu as $k => $v) {
+                if($v['parent_id'] == 0) {
+                    $menu[$k]['name'] = '|-' . $v['name'];
+                }
+                else {
+                    $menu[$k]['name'] = '|---' . $v['name'];
+                }
+            }
+            $this->assign('menu',$menu);
+            return $this->fetch();
         }
     }
 
@@ -92,7 +134,60 @@ class Role extends Base
      */
     public function edit_role(Request $request)
     {
+        $id = request()->param('id',0,'intval');
 
+        if(!$id) {
+            $this->code = 9013;
+            goto res;
+        }
+        if(request()->isAjax()) {
+            $data['name'] = $request->post('name','','htmlspecialchars');
+            $data['url'] = strtolower($request->post('url',''));
+            $data['sort'] = $request->post('sort',0,'intval');
+            $data['parent_id'] = $request->post('parent_id',0,'intval');
+            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 ) {
+                goto res;
+            }
+            if($data['url'] != '') {
+                if(!preg_match('/^[\w]+\/[\w]+$/',$data['url'])) {
+                    $this->code = 9012;
+                    goto res;
+                }
+                if(Db::name('admin_menu')->where(['url'=>$data['url'],'id'=>['neq',$id]])->find()) {
+                    $this->code = 9018;
+                    goto res;
+                }
+            }
+            try{
+                $model = new MenuModel();
+                $this->code = $model->update_menu($data,$id,9016);
+            }
+            catch(\PDOException $e) {
+                $this->code = 9999;
+            }
+            res:
+            $this->code != 0 || $this->reflash_menu();
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
+        }
+        elseif(request()->isGet()){
+            $info = Db::name('admin_menu')->find($id);
+            if(($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) == false) {
+                $menu = $this->cache_menu();
+            }
+            foreach($menu as $k => $v) {
+                if($v['parent_id'] == 0) {
+                    $menu[$k]['name'] = '|-' . $v['name'];
+                }
+                else {
+                    $menu[$k]['name'] = '|---' . $v['name'];
+                }
+            }
+            $this->assign([
+                'info' => $info,
+                'menu' => $menu,
+            ]);
+            return $this->fetch();
+        }
     }
 
     /**
@@ -134,7 +229,53 @@ class Role extends Base
      */
     public function add_admin_user(Request $request)
     {
-
+        if($request->isAjax()) {
+            $data['name'] = $request->post('name','','htmlspecialchars');
+            $data['url'] = strtolower($request->post('url',''));
+            $data['sort'] = $request->post('sort',0,'intval');
+            $data['parent_id'] = $request->post('parent_id',0,'intval');
+            $id = 0;
+            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 ) {
+                goto res;
+            }
+            if($data['url'] != '') {
+                if(!preg_match('/^[\w]+\/[\w]+$/',$data['url'])) {
+                    $this->code = 9012;
+                    goto res;
+                }
+                if(Db::name('admin_menu')->where(['url'=>$data['url']])->find()) {
+                    $this->code = 9018;
+                    goto res;
+                }
+            }
+            $data['add_time'] = time();
+            try{
+                $id = Db::name('admin_menu')->insertGetId($data);
+                //重新缓存菜单
+                $this->code = 0;
+            }
+            catch(\PDOException $e) {
+                $this->code = 9999;
+            }
+            res:
+            $this->code != 0 || $this->reflash_menu();
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code],'data'=> !empty($id)?url('auth/auth_by_menu',['menu_id'=>$id]):null]);
+        }
+        else {
+            if(($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) == false) {
+                $menu = $this->cache_menu();
+            }
+            foreach($menu as $k => $v) {
+                if($v['parent_id'] == 0) {
+                    $menu[$k]['name'] = '|-' . $v['name'];
+                }
+                else {
+                    $menu[$k]['name'] = '|---' . $v['name'];
+                }
+            }
+            $this->assign('menu',$menu);
+            return $this->fetch();
+        }
     }
 
     /**
@@ -142,7 +283,60 @@ class Role extends Base
      */
     public function edit_admin_user(Request $request)
     {
+        $id = request()->param('id',0,'intval');
 
+        if(!$id) {
+            $this->code = 9013;
+            goto res;
+        }
+        if(request()->isAjax()) {
+            $data['name'] = $request->post('name','','htmlspecialchars');
+            $data['url'] = strtolower($request->post('url',''));
+            $data['sort'] = $request->post('sort',0,'intval');
+            $data['parent_id'] = $request->post('parent_id',0,'intval');
+            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 ) {
+                goto res;
+            }
+            if($data['url'] != '') {
+                if(!preg_match('/^[\w]+\/[\w]+$/',$data['url'])) {
+                    $this->code = 9012;
+                    goto res;
+                }
+                if(Db::name('admin_menu')->where(['url'=>$data['url'],'id'=>['neq',$id]])->find()) {
+                    $this->code = 9018;
+                    goto res;
+                }
+            }
+            try{
+                $model = new MenuModel();
+                $this->code = $model->update_menu($data,$id,9016);
+            }
+            catch(\PDOException $e) {
+                $this->code = 9999;
+            }
+            res:
+            $this->code != 0 || $this->reflash_menu();
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
+        }
+        elseif(request()->isGet()){
+            $info = Db::name('admin_menu')->find($id);
+            if(($menu = cache(CacheKey::BEHIND_CACHE['menu_list'])) == false) {
+                $menu = $this->cache_menu();
+            }
+            foreach($menu as $k => $v) {
+                if($v['parent_id'] == 0) {
+                    $menu[$k]['name'] = '|-' . $v['name'];
+                }
+                else {
+                    $menu[$k]['name'] = '|---' . $v['name'];
+                }
+            }
+            $this->assign([
+                'info' => $info,
+                'menu' => $menu,
+            ]);
+            return $this->fetch();
+        }
     }
 
     /**
@@ -225,5 +419,4 @@ class Role extends Base
         $sort($data);
         return $res;
     }
-
 }
