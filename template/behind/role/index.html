@@ -6,38 +6,55 @@
     <div class="col-lg-12">
         <section class="panel">
             <div class="panel-body">
-
                 <div class="table-responsive col-lg-10 col-lg-offset-1" tabindex="1" style="overflow: hidden; outline: none;" >
                     <div class="row">
-                        <button type="submit" class="btn btn-primary "> 查询</button>
-                        <button class="btn btn-default reset" type="reset"> 重置</button>
+                        {auth name="role/add_role"}
+                        <a href="{:url('add_role')}" class="btn btn-primary ">新增角色</a>
+                        {/auth}
+
+                        <hr>
                     </div>
                     <table class="table table-bordered">
                         <thead>
                         <tr>
                             <th>id</th>
                             <th>角色名称</th>
-                            <th>上级角色</th>
-                            <th>手机号</th>
-                            <th>角色</th>
+                            <th>角色创建人</th>
                             <th>状态</th>
-                            <th>上次登录时间</th>
                             <th>添加时间</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {volist name="user" id="u"}
+                        {volist name="role" id="m"}
                         <tr>
-                            <td>{$u.id}</td>
-                            <td>{$u.admin_user}</td>
-                            <td>{$u.admin_name}</td>
-                            <td>{$u.admin_phone|}</td>
-                            <td>{$u.role_name}</td>
-                            <td>{$u.status}</td>
-                            <td>{$u.last_login|date="Y-m-d H:i:s",###}</td>
-                            <td>{$u.add_time|date="Y-m-d H:i:s",###}</td>
+                            <td>{$m.id}</td>
+                            <td>{$m.role_name}</td>
+                            <td>{$m.admin_name}</td>
+                            <td>{$m.status_name}</td>
+                            <td>{$m.add_time|date="Y-m-d H:i:s",###}</td>
                             <td>
+                                {auth name="role/edit_role"}
+                                <a class="btn btn-info btn-xs" href="{:url('edit_role',['id'=>$m.id])}">编辑</a>
+                                {/auth}
+
+                                {auth name="role/disable_role"}
+                                {if condition="$m.status eq 0"}
+                                <a class="btn btn-success btn-xs disable" data-id="{$m.id}" data-status="{$m.status}">禁用</a>
+                                {elseif condition="$m.status eq 1" /}
+                                <a class="btn btn-default btn-xs disable" data-id="{$m.id}" data-status="{$m.status}">激活</a>
+                                {/if}
+                                {/auth}
+
+                                {auth name="role/del_role"}
+                                {if condition="$m.status neq 9"}
+                                <a class="btn btn-danger btn-xs del_role" data-id="{$m.id}">删除</a>
+                                {else/}
+                                <a class="btn btn-danger btn-xs disabled" data-id="{$m.id}">已删除</a>
+                                {/if}
+                                {/auth}
+
+
                             </td>
                         </tr>
                         {/volist}
@@ -56,7 +73,56 @@
 
 {block name="js"}
 <script>
+    $(function(){
+        $('.disable').on('click',function(){
+            var url = "{:url('disable_role')}";
+            var data = {
+                id:$(this).attr('data-id'),
+                status:$(this).attr('data-status')
+            }
+            if(data.id == false || data.status != 0 && data.status != 1) {
+                layer.alert('非法参数');
+                return false;
+            }
+            $.post(url,data,function(e){
+                if(e.code == 0) {
+                    layer.msg('操作成功');
+                    setTimeout('location.reload()',1000);
+                }
+                else{
+                    layer.alert(e.msg)
+                }
+            },'json')
+        })
 
+        $('.del_role').on('click',function(){
+            var _this = this;
+            layer.confirm('删除后将无法恢复，是否确认删除？',{
+                btn:['确定','取消']
+            },function(){
+                var data = {
+                    id:$(_this).attr('data-id')
+                }
+                if(data.id == false) {
+                    layer.alert('非法参数');
+                    return false;
+                }
+                var url = "{:url('role/del_role')}";
+                $.post(url,data,function(e){
+                    if(e.code == 0 ) {
+                        layer.msg('操作成功');
+                        setTimeout("location.reload()",1000);
+                    }
+                    else {
+                        layer.msg(e.msg);
+                    }
+                },'json')
+            },function(){
+                layer.msg('取消操作',{time:500})
+            });
+        })
+    }())
 </script>
 {/block}
+
 

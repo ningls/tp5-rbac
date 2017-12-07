@@ -317,4 +317,48 @@ class Base extends CBase
             }
         }
     }
+
+    /**
+     * 二维数组根据字段进行排序
+     * @params array $array 需要排序的数组
+     * @params string $field 排序的字段
+     * @params string $sort 排序顺序标志 SORT_DESC 降序；SORT_ASC 升序
+     */
+    protected function arraySequence($array, $field, $sort = 'SORT_')
+    {
+        $arrSort = array();
+        foreach ($array as $uniqid => $row) {
+            foreach ($row as $key => $value) {
+                $arrSort[$key][$uniqid] = $value;
+            }
+        }
+        array_multisort($arrSort[$field], constant($sort), $array);
+        return $array;
+    }
+    /**
+     * 判断parent_id的父辈元素中是否含有id元素是否为查找元素的父元素 -- find_key正向排序性能更好
+     */
+    protected function find_parent(array $data,int $parent_id,int $id,string $find_key)
+    {
+        if($parent_id == $id) {
+            return true;
+        }
+        $sort = function($data,$parent_id) use ($find_key,$id,&$sort) {
+            if($parent_id == $id) {
+                return true;
+            }
+            if($parent_id == 0) {
+                return false;
+            }
+            foreach($data as $v) {
+                if($v[$find_key] == $parent_id) {
+                    return $sort($data,$v['parent_id']);
+                }
+            }
+            return false;
+        };
+        return $sort($data,$parent_id);
+    }
+
 }
+
