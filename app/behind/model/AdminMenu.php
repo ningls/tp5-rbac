@@ -48,7 +48,6 @@ class AdminMenu extends Model
         }catch(\PDOException $e){
             return $code;
         }
-
     }
 
     /**
@@ -65,7 +64,6 @@ class AdminMenu extends Model
         }catch(\PDOException $e){
             return $code;
         }
-
     }
 
 }

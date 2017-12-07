@@ -44,17 +44,24 @@
                             <td>{$u.last_login|date="Y-m-d H:i:s",###}</td>
                             <td>{$u.add_time|date="Y-m-d H:i:s",###}</td>
                             <td>
-                                {auth name="role/disable_user"}
-                                    <a class="confirm" href="{:url('role/disable_user')}" target="_blabk">
-                                        {if condition="$u.status eq 0"}
-                                            锁定
-                                        {elseif condition="$u.status eq 1"}
-                                            解锁
-                                        {/if}
-                                    </a>
+                                {auth name="role/edit_admin_user"}
+                                <a class="btn btn-info btn-xs" href="{:url('edit_admin_user',['id'=>$u.id])}">编辑</a>
                                 {/auth}
-                                {auth name="role/del_user"}
-                                    <a class="comfirm" href="{:url('role/del_user')}">删除角色</a>
+
+                                {auth name="role/disable_admin_user"}
+                                {if condition="$u.status eq 0"}
+                                <a class="btn btn-success btn-xs disable" data-id="{$u.id}" data-status="{$u.status}">禁用</a>
+                                {elseif condition="$u.status eq 1" /}
+                                <a class="btn btn-default btn-xs disable" data-id="{$u.id}" data-status="{$u.status}">激活</a>
+                                {/if}
+                                {/auth}
+
+                                {auth name="role/del_admin_user"}
+                                {if condition="$u.status neq 9"}
+                                <a class="btn btn-danger btn-xs del_admin_user" data-id="{$u.id}">删除</a>
+                                {else/}
+                                <a class="btn btn-danger btn-xs disabled" data-id="{$u.id}">已删除</a>
+                                {/if}
                                 {/auth}
                             </td>
                         </tr>
@@ -75,16 +82,40 @@
 {block name="js"}
 <script>
     $(function(){
-        $('.confirm').on('click',function(){
-            layer.confirm('是否确定操作？',{
+        $('.disable').on('click',function(){
+            var url = "{:url('disable_admin_user')}";
+            var data = {
+                id:$(this).attr('data-id'),
+                status:$(this).attr('data-status')
+            }
+            if(data.id == false || data.status != 0 && data.status != 1) {
+                layer.alert('非法参数');
+                return false;
+            }
+            $.post(url,data,function(e){
+                if(e.code == 0) {
+                    layer.msg('操作成功');
+                    setTimeout('location.reload()',1000);
+                }
+                else{
+                    layer.alert(e.msg)
+                }
+            },'json')
+        })
+
+        $('.del_admin_user').on('click',function(){
+            var _this = this;
+            layer.confirm('删除后将无法恢复，是否确认删除？',{
                 btn:['确定','取消']
             },function(){
-                var data = $(this).attr('ajax-data');
-                if(data == 'undefined' || data == false ) {
-                    layer.msg('没有数据');
+                var data = {
+                    id:$(_this).attr('data-id')
+                }
+                if(data.id == false) {
+                    layer.alert('非法参数');
                     return false;
                 }
-                var url = $(this).attr('href');
+                var url = "{:url('role/del_admin_user')}";
                 $.post(url,data,function(e){
                     if(e.code == 0 ) {
                         layer.msg('操作成功');
@@ -94,11 +125,9 @@
                         layer.msg(e.msg);
                     }
                 },'json')
-                return false;
             },function(){
                 layer.msg('取消操作',{time:500})
             });
-            return false;
         })
     }())
 </script>

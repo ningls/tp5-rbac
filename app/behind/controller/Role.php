@@ -5,6 +5,7 @@ use app\behind\model\AdminRole;
 use app\behind\model\AdminUser;
 use app\common\logic\StatusCode;
 use think\Db;
+use think\Request;
 
 class Role extends Base
 {
@@ -14,17 +15,21 @@ class Role extends Base
     public function index()
     {
         $model = new AdminRole();
-        $role = $model->get_role();
-        $parents = [];
+        $where = [];
+        if(!$this->global_setting['show_del_role']) {
+            $where['r.status'] = ['neq',9];
+        }
+        $role = $model->get_role($where);
+        $role = $role->toArray()['data'];
+        $role = $this->get_son_array($role,session('user.role_id'));
         foreach($role as $k => $v) {
-            $parents[$v['id']] = $v['role_name'];
-            if($v['parent_id'] == 0) {
-                $role[$k]['parent_name'] = '-';
-            }
-            else {
-
+            $role[$k]['status_name'] = StatusCode::role_status[$v['status']];
+            if($v['parent_id'] != 0) {
+                $menu[$k]['role_name'] = '|' . str_repeat('------',(int)$v['level']) . $v['name'];
             }
         }
+        $this->assign('role',$role);
+        return $this->fetch();
     }
 
     /**
@@ -32,29 +37,48 @@ class Role extends Base
      */
     public function admin_user()
     {
-        $data = Db::name('admin_user')->where([])->select();
-        dump($data);
-        $model = new AdminUser();
-        $user = $model->get_admin_user($this->global_setting['page_limit']);
-        foreach($user as $k => $v) {
-            $user[$k]['status_name'] = StatusCode::admin_user_status[$v['status']];
+        $admin_role = session('user.role_id');
+        $where = [];
+        if((int)$admin_role !== 1) {
+            $where['role_id'] = ['egt',$admin_role];
         }
-        $this->assign('user',$user);
+        if(!$this->global_setting['show_del_user']) {
+            $where['u.status'] = ['neq',9];
+        }
+        $user_model = new AdminUser();
+        $user_data = $user_model->get_group_user($where);
+
+        $user_data = $user_data->toArray()['data'];
+        $user_data = $this->get_son_array($user_data,$admin_role,'role_id');
+        foreach($user_data as $k => $v) {
+            $user_data[$k]['status_name'] = StatusCode::admin_user_status[$v['status']];
+            if($v['parent_id'] != 0) {
+                $menu[$k]['role_name'] = '|' . str_repeat('------',(int)$v['level']) . $v['name'];
+            }
+        }
+        $this->assign('user',$user_data);
         return $this->fetch();
+
     }
 
     /**
      * 新增角色
      */
-    public function add_role()
+    public function add_role(Request $request)
     {
+        if($request->isAjax()) {
 
+        }
+        elseif($request->isGet()) {
+            $admin_role = session('user.role_id');
+            dump($admin_role);
+        }
     }
 
     /**
      * 编辑角色
      */
-    public function edit_role()
+    public function edit_role(Request $request)
     {
 
     }
@@ -62,7 +86,7 @@ class Role extends Base
     /**
      * 禁用激活角色
      */
-    public function disable_role()
+    public function disable_role(Request $request)
     {
 
     }
@@ -70,7 +94,7 @@ class Role extends Base
     /**
      * 删除角色
      */
-    public function del_role()
+    public function del_role(Request $request)
     {
 
     }
@@ -78,7 +102,7 @@ class Role extends Base
     /**
      * 新增管理用户
      */
-    public function add_admin_user()
+    public function add_admin_user(Request $request)
     {
 
     }
@@ -86,7 +110,7 @@ class Role extends Base
     /**
      * 编辑管理用户
      */
-    public function edit_admin_user()
+    public function edit_admin_user(Request $request)
     {
 
     }
@@ -94,7 +118,7 @@ class Role extends Base
     /**
      * 禁用/激活管理用户
      */
-    public function disable_admin_user()
+    public function disable_admin_user(Request $request)
     {
 
     }
@@ -102,74 +126,55 @@ class Role extends Base
     /**
      * 删除管理用户
      */
-    public function del_admin_user()
+    public function del_admin_user(Request $request)
     {
 
     }
 
-    /**
-     * 获取下级角色
-     */
-    protected function get_tree_role()
-    {
-        if(!$this->global_setting['show_del_menu']) {
-            $data = Db::name('admin_menu')->where(['status'=>['neq',9]])->order('parent_id,sort')->select();
-        }
-        else{
-            $data = Db::name('admin_menu')->order('parent_id,sort')->select();
-        }
-        $menu = [];
 
-        $sort = function ($data , $parent_id = 0, $level = 0,$parent_name = '') use (&$menu,&$sort) {
+    /**
+     * 通过parent_id查找子孙数组(包含自己)   -- 必须根据role_id asc排序 否则会出现错漏
+     * @param array $data
+     * @param int $parent_id
+     * @param string $find_key
+     * @return array $res
+     */
+    protected function get_son_array(array $data,int $parent_id,string $find_key = 'id'):array
+    {
+        //对data进行排序
+        $data = $this->arraySequence($data,$find_key);
+        $find = [];
+        $res = [];
+        foreach($data as  $v) {
+            if($v[$find_key] == $parent_id || in_array($v['parent_id'],$find)) {
+                $res[] = $v;
+                $find[] = $v[$find_key];
+            }
+        }
+        $res = $this->get_tree_by_parent_id($res);
+        return $res;
+    }
+
+    /**
+     * 根据parent_id获取树状二维数组
+     * @param array $data
+     * @return array $res
+     */
+    protected function get_tree_by_parent_id(array $data):array
+    {
+        $res = [];
+        $sort = function ($data , $parent_id = 0, $level = 0) use (&$res,&$sort) {
             foreach($data as $k => $v) {
-                if($v['status'] != 0) {
-                    $v['name'] = $v['name'] . '(' . StatusCode::menu_status[$v['status']] . ')';
-                }
                 if($v['parent_id'] == $parent_id) {
                     $v['level'] = $level;
-                    $v['parent_name'] = $parent_name;
-                    $menu[] = $v;
+                    $res[] = $v;
                     unset($data[$k]);
-                    $sort($data,$v['id'],$level+1,$v['name']);
+                    $sort($data,$v['id'],$level+1);
                 }
             }
         };
         $sort($data);
-        cache(CacheKey::BEHIND_CACHE['menu_tree'], $menu);
-        return $menu;
-
+        return $res;
     }
 
-    /**
-     * 获取下级用户
-     */
-    protected function get_tree_user()
-    {
-        if(!$this->global_setting['show_del_menu']) {
-            $data = Db::name('admin_menu')->where(['status'=>['neq',9]])->order('parent_id,sort')->select();
-        }
-        else{
-            $data = Db::name('admin_menu')->order('parent_id,sort')->select();
-        }
-        $menu = [];
-
-        $sort = function ($data , $parent_id = 0, $level = 0,$parent_name = '') use (&$menu,&$sort) {
-            foreach($data as $k => $v) {
-                if($v['status'] != 0) {
-                    $v['name'] = $v['name'] . '(' . StatusCode::menu_status[$v['status']] . ')';
-                }
-                if($v['parent_id'] == $parent_id) {
-                    $v['level'] = $level;
-                    $v['parent_name'] = $parent_name;
-                    $menu[] = $v;
-                    unset($data[$k]);
-                    $sort($data,$v['id'],$level+1,$v['name']);
-                }
-            }
-        };
-        $sort($data);
-        cache(CacheKey::BEHIND_CACHE['menu_tree'], $menu);
-        return $menu;
-
-    }
 }

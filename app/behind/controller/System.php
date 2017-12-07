@@ -27,12 +27,17 @@ class System extends Base
         $admin_id = $request->get('admin_id',0,'intval');
         $url = $request->get('url','');
         $where = [];
-        if($start !== '') {
+        if($start !== '' && $end !== '') {
+            $where['view_at'][] = ['egt',strtotime($start)];
+            $where['view_at'][] = ['elt',strtotime($end) + 86400];
+        }
+        elseif($start !== '') {
             $where['view_at'] = ['egt',strtotime($start)];
         }
-        if($end !== '') {
+        elseif($end !== '') {
             $where['view_at'] = ['elt',strtotime($end) + 86400];
         }
+
         if($admin_id !== 0) {
             $where['admin_id'] = $admin_id;
         }
