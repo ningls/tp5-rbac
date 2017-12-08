@@ -58,32 +58,27 @@ class Role extends Base
     {
         $admin_role = $this->role_id;
         $where = [];
-        if((int)$admin_role !== 1) {
-            $where['u.role_id'] = ['egt',$admin_role];
-        }
+
         if(!$this->global_setting['show_del_user']) {
             $where['u.status'] = ['neq',9];
         }
         $user_model = new AdminUser();
         $user_data = $user_model->get_group_user($where);
-
         $user_data = $user_data->toArray()['data'];
+        if($this->role_id === 1) {
+            $user_data = $this->get_tree_by_parent_id($user_data);
+        }
+        else {
+            $user_data = $this->get_son_array($user_data,$admin_role);
+        }
         $user_data = $this->get_son_array($user_data,$admin_role,'role_id');
         $tmp = [];
         foreach($user_data as $k => $v) {
             $user_data[$k]['status_name'] = StatusCode::admin_user_status[$v['status']];
-            //删除其他同级用户并将自己提到顶部
-            if($v['role_id'] == $admin_role) {
-                if($v['id'] == session('user.id')) {
-                    $tmp = $user_data[$k];
-                }
-                unset($user_data[$k]);
-            }
             if($v['parent_id'] != 0) {
-                $menu[$k]['role_name'] = '|' . str_repeat('------',(int)$v['level']) . $v['name'];
+                $user_data[$k]['role_name'] = '|' . str_repeat('------',(int)$v['level']) . $v['name'];
             }
         }
-        array_unshift($user_data,$tmp);
         $this->assign('user',$user_data);
         return $this->fetch();
 
@@ -283,8 +278,9 @@ class Role extends Base
             $data['admin_user'] = $request->post('admin_user','','htmlspecialchars');
             $data['admin_name'] = $request->post('admin_name','','htmlspecialchars');
             $data['role_id'] = $request->post('role_id',0,'intval');
-            $data['admin_phone'] = $request->post('admin_phone','','intval');
-            if($data['admin_user'] == false && ($this->code = 9025) || $data['admin_name'] == false && ($this->code = 9029) || ($data['admin_phone'] == false || !preg_match('/^1[3|5|7|8][\d]{9}$/',$data['admin_phone'])) && ($this->code = 9001) || !preg_match('/^[\w]{4,20}$/',$data['admin_user']) && ($this->code = 9030)) {
+            $data['admin_phone'] = $request->post('admin_user','','intval');
+            return json(['code'=>1,'msg'=>$data['admin_phone']]);
+            if($data['admin_user'] == false && ($this->code = 9025) || $data['admin_name'] == false && ($this->code = 9029) || ($data['admin_phone'] == false || !preg_match('/^1[34578][\d]{9}$/',$data['admin_phone']) && ($this->code = 9001)) || !preg_match('/^[\w]{4,20}$/',$data['admin_user']) && ($this->code = 9030)) {
                 goto res;
             }
             $parent_id = Db::name('admin_role')->where(['id'=>$data['role_id']])->value('parent_id');
@@ -312,7 +308,8 @@ class Role extends Base
                 $this->code = 9999;
             }
             res:
-            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
+//            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
+            return json(['code'=>$this->code,'msg'=>$data['admin_phone']]);
         }
         else {
             $admin_role = $this->role_id;

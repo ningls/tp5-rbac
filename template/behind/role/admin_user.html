@@ -44,11 +44,11 @@
                             <td>{$u.last_login|date="Y-m-d H:i:s",###}</td>
                             <td>{$u.add_time|date="Y-m-d H:i:s",###}</td>
                             <td>
+                                {if condition="session('user.id') neq $u.id"}
                                 {auth name="role/edit_admin_user"}
                                 <a class="btn btn-info btn-xs" href="{:url('edit_admin_user',['id'=>$u.id])}">编辑</a>
                                 {/auth}
 
-                                {if condition="session('user.id') eq $u.id"}
                                 {auth name="role/disable_admin_user"}
                                 {if condition="$u.status eq 0"}
                                 <a class="btn btn-success btn-xs disable" data-id="{$u.id}" data-status="{$u.status}">禁用</a>
