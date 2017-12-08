@@ -350,7 +350,7 @@ class Role extends Base
         $id = $request->param('id',0,'intval');
 
         //不是超级管理员时，判断是否是当前用户下级用户
-        if(!$id && ($this->code = 9013) || $this->role_id !== 2 && !Authority::is_user_parent($id,$this->role_id) && ($this->code = 9998)) {
+        if(!$id && ($this->code = 9013) || $this->role_id !== 1 && !Authority::is_user_parent($id,$this->role_id) && ($this->code = 9998)) {
             if($request->isGet()){
                 $this->error(ErrorCode::error[$this->code],url('admin_user'));
             }
