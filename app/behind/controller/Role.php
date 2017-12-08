@@ -278,8 +278,8 @@ class Role extends Base
             $data['admin_user'] = $request->post('admin_user','','htmlspecialchars');
             $data['admin_name'] = $request->post('admin_name','','htmlspecialchars');
             $data['role_id'] = $request->post('role_id',0,'intval');
-            $data['admin_phone'] = $request->post('admin_user','','intval');
-            return json(['code'=>1,'msg'=>$data['admin_phone']]);
+            $data['admin_phone'] = $request->post('admin_phone','');
+
             if($data['admin_user'] == false && ($this->code = 9025) || $data['admin_name'] == false && ($this->code = 9029) || ($data['admin_phone'] == false || !preg_match('/^1[34578][\d]{9}$/',$data['admin_phone']) && ($this->code = 9001)) || !preg_match('/^[\w]{4,20}$/',$data['admin_user']) && ($this->code = 9030)) {
                 goto res;
             }
@@ -308,8 +308,7 @@ class Role extends Base
                 $this->code = 9999;
             }
             res:
-//            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
-            return json(['code'=>$this->code,'msg'=>$data['admin_phone']]);
+            return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
         }
         else {
             $admin_role = $this->role_id;
