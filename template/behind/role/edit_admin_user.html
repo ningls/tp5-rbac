@@ -1,0 +1,98 @@
+{extend name="base:layout"}
+
+{block name="body"}
+<!-- page start-->
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="table-responsive col-lg-6" tabindex="1" style="overflow: hidden; outline: none;" >
+
+                    <div class="form-group">
+                        <label for="admin_user">管理员用户名</label>
+                        <input type="text" class="form-control" required id="admin_user" name="admin_user" placeholder="管理员用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="admin_name">管理员姓名</label>
+                        <input type="text" class="form-control" required id="admin_name" name="admin_name" placeholder="管理员姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="role_id">用户组</label>
+                        <select id="role_id" name="role_id" class="form-control m-bot15">
+                            {volist name="role_list" id="r"}
+                            <option value="{$r.id}" {if condition="$role_id eq $r.id && $role_id neq 1"}disabled{/if}{if condition="$info.role_id eq $r.id"}selected{/if}>{$r.role_name}</option>
+                            {/volist}
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="menu_url">
+                        <label for="admin_phone">手机号</label>
+                        <input type="text" class="form-control" id="admin_phone" hidden name="admin_phone" placeholder="手机号">
+                    </div>
+
+
+                    <div class="row">
+                        <input type="hidden" id="id" value="{$info.id}">
+                        <button id="sub" class="btn btn-info">提交</button>
+                        <a href="{:url('role/admin_user')}" class="btn btn-info">取消</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- page end-->
+
+
+{/block}
+
+{block name="js"}
+<script>
+    $(function(){
+        $('#sub').on('click',function(){
+            var data = {
+                admin_user:$('#admin_user').val(),
+                admin_name:$('#admin_name').val(),
+                admin_phone:$('#admin_phone').val(),
+                role_id:$('#role_id').val(),
+                id:$('#id').val()
+            }
+            var url = "{:url('role/add_admin_user')}";
+            for(var p in data) {
+                if(data[p] == false) {
+                    layer.tips('内容不能为空', '#' + p,{
+                        tipsMore: true
+                    });
+                    return;
+                }
+            }
+            if(!(/^1[34578]\d{9}$/.test(data.admin_phone))) {
+                layer.tips('手机号码格式错误', '#admin_phone',{
+                    tipsMore: true
+                });
+                return;
+            }
+            if(!(/^[\w]{4,20}$/.test(data.admin_user))) {
+                layer.tips('用户名为4-20位字母数字下划线', '#admin_user',{
+                    tipsMore: true
+                });
+                return;
+            }
+            $.post(url,data,function(res){
+                if(res.code != 0) {
+                    layer.alert(res.msg, {
+                        icon: 5
+                    })
+                }
+                else {
+                    layer.msg('新增用户成功');
+                    setTimeout("location.href= '" + "{:url('role/admin_user')}" +"'",800);
+                }
+            },'json')
+            return false;
+        })
+    }())
+</script>
+{/block}
+
+

@@ -42,7 +42,7 @@ class Menu extends Base
             $data['sort'] = $request->post('sort',0,'intval');
             $data['parent_id'] = $request->post('parent_id',0,'intval');
             $id = 0;
-            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 ) {
+            if( $data['name'] == false && ($this->code = 9010) || $data['url'] == false && ($this->code = 9011) ) {
                 goto res;
             }
             if($data['url'] != '') {
@@ -101,7 +101,7 @@ class Menu extends Base
             $data['url'] = strtolower($request->post('url',''));
             $data['sort'] = $request->post('sort',0,'intval');
             $data['parent_id'] = $request->post('parent_id',0,'intval');
-            if( $data['name'] == false && $this->code = 9010 || $data['url'] == false && $this->code = 9011 ) {
+            if( $data['name'] == false && ($this->code = 9010) || $data['url'] == false && ($this->code = 9011) ) {
                 goto res;
             }
             if($data['url'] != '') {

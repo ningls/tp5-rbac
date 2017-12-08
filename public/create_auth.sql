@@ -122,6 +122,7 @@ INSERT INTO [[PREFIX]]global_setting(`key`,`value`,`comment`) values
 ('sms_verify',0,'后台登录短信验证，1-是，0-否'),
 ('sms_expire',3000,'短信验证码过期时间'),
 ('page_limit',15,'后台数据每页页数'),
+('user_init_pwd',000000,'新建用户初始化密码'),
 ('api_auth_open',0,'是否开启api权限验证，1-是，0-否'),
 ('show_del_menu',0,'菜单管理是否显示已删除菜单，1-是，0-否'),
 ('show_del_role',0,'角色管理是否显示已删除角色，1-是，0-否'),

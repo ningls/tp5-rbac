@@ -31,6 +31,9 @@ class Authority
     static function is_user_parent(int $user_id,$role_id)
     {
         $parent_id = Db::name('admin_user')->alias('u')->join('admin_role r','u.role_id=r.id')->where(['u.id'=>$user_id])->value('parent_id');
+        if($parent_id == false) {
+            return false;
+        }
         if($parent_id == $role_id) {
             return true;
         }
