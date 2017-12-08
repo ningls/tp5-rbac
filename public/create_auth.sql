@@ -20,7 +20,6 @@ DROP TABLE IF EXISTS [[PREFIX]]admin_role;
 CREATE TABLE [[PREFIX]]admin_role(
     `id` tinyint(3) unsigned not null PRIMARY KEY auto_increment comment '主键,角色id',
     `role_name` varchar(25) not null default '' comment '角色名称',
-    `role_id` tinyint(3) unsigned not null default 0 comment '角色id',
     `parent_id` tinyint(3) unsigned not null default 0 comment '父id',
     `create_user_id` tinyint(3) unsigned not null default 0 comment '创建人id',
     `status` tinyint(2) unsigned not null default 0 comment '状态 0-正常，1-禁用，9-删除',
@@ -30,7 +29,7 @@ CREATE TABLE [[PREFIX]]admin_role(
 )charset = 'utf8' engine = innodb comment = '管理用户表';
 
 /* 添加超级管理员 */
-INSERT INTO [[PREFIX]]admin_role(`role_name`,`role_id`,`parent_id`,`create_user_id`,`status`,`add_time`) values('超级管理员',1,0,1,0,unix_timestamp(now()));
+INSERT INTO [[PREFIX]]admin_role(`role_name`,`parent_id`,`create_user_id`,`status`,`add_time`) values('超级管理员',0,1,0,unix_timestamp(now()));
 
 /* 菜单表 */
 DROP TABLE IF EXISTS [[PREFIX]]admin_menu;
@@ -126,4 +125,5 @@ INSERT INTO [[PREFIX]]global_setting(`key`,`value`,`comment`) values
 ('api_auth_open',0,'是否开启api权限验证，1-是，0-否'),
 ('show_del_menu',0,'菜单管理是否显示已删除菜单，1-是，0-否'),
 ('show_del_role',0,'角色管理是否显示已删除角色，1-是，0-否'),
-('show_del_user',0,'用户管理是否显示已删除用户，1-是，0-否');
+('show_del_user',0,'用户管理是否显示已删除用户，1-是，0-否')
+('version',0.5,'版本号');
