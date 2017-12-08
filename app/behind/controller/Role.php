@@ -12,12 +12,19 @@ use app\common\logic\ErrorCode;
 
 class Role extends Base
 {
+    protected $role_id;
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->role_id = Db::name('admin_user')->where(['id' => session('user.id')])->value('role_id');
+    }
     /**
      * 角色管理
      */
     public function index()
     {
-        $admin_role = Db::name('admin_user')->where(['id'=>session('user.id')])->value('role_id');
+        $admin_role = $this->role_id;
         $model = new AdminRole();
         $where = [];
         if(!$this->global_setting['show_del_role']) {
@@ -42,7 +49,7 @@ class Role extends Base
     public function admin_user()
     {
         //重新查询，防止更高级别角色更改本角色的角色
-        $admin_role = Db::name('admin_user')->where(['id'=>session('user.id')])->value('role_id');
+        $admin_role = $this->role_id;
         $where = [];
         if((int)$admin_role !== 1) {
             $where['role_id'] = ['gt',$admin_role];
@@ -384,7 +391,9 @@ class Role extends Base
     protected function get_son_array(array $data,int $parent_id,string $find_key = 'id'):array
     {
         //对data进行排序
-
+        if($data == []) {
+            return [];
+        }
         $data = $this->arraySequence($data,$find_key);
         $find = [];
         $res = [];
