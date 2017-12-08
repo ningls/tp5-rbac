@@ -66,10 +66,10 @@ class Role extends Base
         $user_data = $user_model->get_group_user($where);
         $user_data = $user_data->toArray()['data'];
         if($this->role_id === 1) {
-            $user_data = $this->get_tree_by_parent_id($user_data);
+            $user_data = $this->get_tree_by_parent_id($user_data,'role_id');
         }
         else {
-            $user_data = $this->get_son_array($user_data,$admin_role);
+            $user_data = $this->get_son_array($user_data,$admin_role,'role_id');
         }
         $user_data = $this->get_son_array($user_data,$admin_role,'role_id');
         $tmp = [];
@@ -499,7 +499,7 @@ class Role extends Base
      * @param array $data
      * @return array $res
      */
-    protected function get_tree_by_parent_id(array $data):array
+    protected function get_tree_by_parent_id(array $data,string $find_key = 'id'):array
     {
         $res = [];
         $sort = function ($data , $parent_id = 0, $level = 0) use (&$res,&$sort) {
