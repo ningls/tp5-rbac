@@ -65,6 +65,12 @@ class Role extends Base
         $user_model = new AdminUser();
         $user_data = $user_model->get_group_user($where);
         $user_data = $user_data->toArray()['data'];
+        foreach($user_data as $k => $v) {
+            if($v['admin_name'] == false){
+                $user_data[$k]['admin_name'] = '暂无';
+            }
+        }
+        
         if($this->role_id === 1) {
             $user_data = $this->get_tree_by_parent_id($user_data,'role_id');
         }
@@ -515,4 +521,5 @@ class Role extends Base
         $sort($data);
         return $res;
     }
+
 }
