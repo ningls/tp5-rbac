@@ -34,6 +34,7 @@
                             <td>{$m.status_name}</td>
                             <td>{$m.add_time|date="Y-m-d H:i:s",###}</td>
                             <td>
+                                {if condition="$m.id neq $role_id"}
                                 {auth name="role/edit_role"}
                                 <a class="btn btn-info btn-xs" href="{:url('edit_role',['id'=>$m.id])}">编辑</a>
                                 {/auth}
@@ -54,7 +55,7 @@
                                 {/if}
                                 {/auth}
 
-
+                                {/if}
                             </td>
                         </tr>
                         {/volist}

@@ -324,7 +324,7 @@ class Base extends CBase
      * @params string $field 排序的字段
      * @params string $sort 排序顺序标志 SORT_DESC 降序；SORT_ASC 升序
      */
-    protected function arraySequence($array, $field, $sort = 'SORT_')
+    protected function arraySequence($array, $field, $sort = 'SORT_ASC')
     {
         $arrSort = array();
         foreach ($array as $uniqid => $row) {
