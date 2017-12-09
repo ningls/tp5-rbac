@@ -62,28 +62,15 @@ class Role extends Base
         if(!$this->global_setting['show_del_user']) {
             $where['u.status'] = ['neq',9];
         }
+        if($this->role_id !== 1) {
+            $where['u.role_id'] = ['in',array_merge([$this->role_id],$this->get_son_role_id($this->role_id))];
+        }
         $user_model = new AdminUser();
         $user_data = $user_model->get_group_user($where);
         $user_data = $user_data->toArray()['data'];
-        foreach($user_data as $k => $v) {
-            if($v['admin_name'] == false){
-                $user_data[$k]['admin_name'] = '暂无';
-            }
-        }
-        
-        if($this->role_id === 1) {
-            $user_data = $this->get_tree_by_parent_id($user_data,'role_id');
-        }
-        else {
-            $user_data = $this->get_son_array($user_data,$admin_role,'role_id');
-        }
-        $user_data = $this->get_son_array($user_data,$admin_role,'role_id');
-        $tmp = [];
+       
         foreach($user_data as $k => $v) {
             $user_data[$k]['status_name'] = StatusCode::admin_user_status[$v['status']];
-            if($v['parent_id'] != 0) {
-                $user_data[$k]['role_name'] = '|' . str_repeat('------',(int)$v['level']) . $v['name'];
-            }
         }
         $this->assign('user',$user_data);
         return $this->fetch();
@@ -519,6 +506,28 @@ class Role extends Base
             }
         };
         $sort($data);
+        return $res;
+    }
+
+    /**
+    * 获取某个role_id的下级role_id
+    */
+    protected function get_son_role_id($role_id)
+    {
+        $data = Db::name('admin_role')->field('id,parent_id')->select();
+        $res = [];
+        $parent = [$role_id];
+        $find = function($data,$parent_id) use (&$parent,&$res,&$find) {
+            foreach($data as $k => $v){
+                if(in_array($v['parent_id'],$parent) && !in_array($v['id'],$res)) {
+                    $parent[] = $v['id'];
+                    $res[] = $v['id'];
+                    unset($data[$k]);
+                    $find($data,$v['id']);
+                }
+            }
+        };
+        $find($data,$role_id);
         return $res;
     }
 
