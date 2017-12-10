@@ -61,7 +61,7 @@ class Role extends Base
 
         if(!$this->global_setting['show_del_user']) {
             $where['u.status'] = ['neq',9];
-        }
+        }   
         if($this->role_id !== 1) {
             $where['u.role_id'] = ['in',array_merge([$this->role_id],$this->get_son_role_id($this->role_id))];
         }
