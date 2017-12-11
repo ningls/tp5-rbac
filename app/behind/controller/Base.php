@@ -44,6 +44,7 @@ class Base extends CBase
 		catch(\think\Exception $e) {
 			exit('未配置数据库');
 		}
+        $this->view_url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
 		if(!$this->auth_exists()) {
 			$this->redirect('base/create_admin');
 		}
@@ -58,7 +59,7 @@ class Base extends CBase
             return false;
         }
 		if(!$this->is_login()) {
-			$this->redirect('sign/login');
+			$this->redirect('behind/sign/login');
 		}
 
 		//获取权限
@@ -115,7 +116,7 @@ class Base extends CBase
             	'last_login' => time(),
             	'add_time'   => time()
             ]);
-            session('user',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1]);
+            session('user',['id'=>$id,'admin_user' => $request->param('admin_user','','htmlspecialchars'),'admin_name'=>$request->param('admin_name','','htmlspecialchars'),'role_id'=>1],24*3600);
             $this->code = 0;
             init_over:
             return json(['code'=>$this->code,'msg'=>ErrorCode::error[$this->code]]);
@@ -167,7 +168,6 @@ class Base extends CBase
     */
     protected function view_auth()
     {
-    	$this->view_url = strtolower(request()->controller()) . '/' . strtolower(request()->action());
     	if($this->view_url == 'index/index') {
     	    $this->view_name = '首页';
     	    return true;
@@ -297,7 +297,6 @@ class Base extends CBase
 	*/
 	protected function is_login():bool
     {
-	    if(config('app_debug')) return true;
 		return session('user')?true:false;
 	}
 
@@ -310,7 +309,7 @@ class Base extends CBase
         if($this->global_setting['log_open']) {
             if(request()->isGet()) {
                 $msg = $this->code?ErrorCode::error[$this->code]:'访问';
-                $this->act_log($this->view_url,$this->view_name,$msg,session('user.id'));
+                $this->act_log($this->view_url??'',$this->view_name??'',$msg,session('user.id')??0);
             }elseif (request()->isPost()) {
                 $this->view_name .= ($this->code?'失败':'成功');
                 $this->act_log($this->view_url,$this->view_name,ErrorCode::error[$this->code],session('user.id'));
