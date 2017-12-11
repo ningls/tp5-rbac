@@ -24,7 +24,6 @@ CREATE TABLE [[PREFIX]]admin_role(
     `create_user_id` tinyint(3) unsigned not null default 0 comment '创建人id',
     `status` tinyint(2) unsigned not null default 0 comment '状态 0-正常，1-禁用，9-删除',
     `add_time` int(10) unsigned not null default 0 comment '增加时间',
-    key `role`(`role_id`),
     key `add_time`(`add_time`)
 )charset = 'utf8' engine = innodb comment = '管理用户表';
 
@@ -126,5 +125,5 @@ INSERT INTO [[PREFIX]]global_setting(`key`,`value`,`comment`) values
 ('api_auth_open',0,'是否开启api权限验证，1-是，0-否'),
 ('show_del_menu',0,'菜单管理是否显示已删除菜单，1-是，0-否'),
 ('show_del_role',0,'角色管理是否显示已删除角色，1-是，0-否'),
-('show_del_user',0,'用户管理是否显示已删除用户，1-是，0-否')
-('version',0.5,'版本号');
+('show_del_user',0,'用户管理是否显示已删除用户，1-是，0-否'),
+('version','0.5.1','版本号');

@@ -19,7 +19,8 @@ class Sign extends Base
             if($this->global_setting['sms_verify']) {
                 $phone = $request->post('phone',0,'int');
                 $code = $request->post('code',0,'int');
-                if(!preg_match('/1[3|5|7|8][\d]{9}/',$phone)) {
+
+                if(!preg_match('/^1[3|5|7|8][\d]{9}$/',$phone)) {
                     $code = 9001;
                     goto login_over;
                 }
@@ -27,7 +28,7 @@ class Sign extends Base
                     $code = 9002;
                     goto login_over;
                 }
-                if($code = $this->find_admin_by_phone($phone) || $code = $this->checkSMS($phone,$code,$this->global_setting['sms_expire'])) {
+                if(($code = $this->find_admin_by_phone($phone)) || ($code = $this->checkSMS($phone,$code,$this->global_setting['sms_expire']))) {
                     goto login_over;
                 }
             }
@@ -39,13 +40,14 @@ class Sign extends Base
                 if($code = $this->checkVerify($verify)) {
                     goto login_over;
                 }
-                if(($code = $this->check_pass($admin_user,$admin_pass)) == 9005) {
+                if($code = $this->check_pass($admin_user,$admin_pass)) {
                     goto login_over;
                 }
-                else {
-                    $code = ErrorCode::admin_status[$code];
-                    goto login_over;
-                }
+            }
+            $status = $this->admin_user['status'];
+            if($status != false) {
+                $code = ErrorCode::admin_status[$status];
+                goto login_over;
             }
             session('user',$this->admin_user);
             login_over:
@@ -79,8 +81,7 @@ class Sign extends Base
         $condition['admin_user'] = $admin_user;
         $condition['admin_pass'] = md5(md5($admin_pass));
         $this->admin_user = Db::name('admin_user')->where($condition)->find();
-        $status = $this->admin_user['status'];
-        return $status??9005;
+        return $this->admin_user?0:9005;
     }
 
     /**
