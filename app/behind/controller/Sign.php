@@ -17,7 +17,12 @@ class Sign extends Base
 		if($request->isAjax()) {
 		    //短信验证码登录
             if($this->global_setting['sms_verify']) {
-                $phone = $request->post('phone',0,'int');
+                $admin_user = $request->post('admin_user','','htmlspecialchars');
+                $phone = $this->find_admin_by_phone($admin_user);
+                if(!$phone) {
+                    $code = 9000;
+                    goto login_over;
+                }
                 $code = $request->post('code',0,'int');
 
                 if(!preg_match('/^1[3|5|7|8][\d]{9}$/',$phone)) {
@@ -28,7 +33,7 @@ class Sign extends Base
                     $code = 9002;
                     goto login_over;
                 }
-                if(($code = $this->find_admin_by_phone($phone)) || ($code = $this->checkSMS($phone,$code,$this->global_setting['sms_expire']))) {
+                if($code = $this->checkSMS($phone,$code,$this->global_setting['sms_expire'])){
                     goto login_over;
                 }
             }
@@ -54,6 +59,7 @@ class Sign extends Base
             return json(['code'=>$code,ErrorCode::error[$code]]);
         }
         elseif($request->isGet()) {
+            $this->assign('sms',$this->global_setting['sms_verify']);
 		    return $this->fetch();
         }
         else {
@@ -82,6 +88,10 @@ class Sign extends Base
         $condition['admin_pass'] = md5(md5($admin_pass));
         $this->admin_user = Db::name('admin_user')->where($condition)->find();
         return $this->admin_user?0:9005;
+    }
+
+    protected function phone_by_username($admin_user) {
+        return Db::name('admin_user')->where(['admin_user'=>$admin_user])->value('admin_phone');
     }
 
     /**

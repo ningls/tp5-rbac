@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Login In</title>
+<meta charset="UTF-8" />
+<meta name="Author" content="heihei">
+<link rel="stylesheet" type="text/css" href="__CSS__/behind/reset.css">
+<link rel="stylesheet" type="text/css" href="__CSS__/behind/structure.css">
+</head>
+
+<body>
+<form class="box login">
+	<header style="line-height: 35px;height: 35px;text-align: center;background-color: #000;">
+		<h1 style="font-size: 20px;color: #ffe;">{$system.system_name|default="后台管理"} - 登录</h1>
+	</header>
+	<fieldset class="boxBody" style="width: 100%;">
+	  <label>用户名</label>
+	  <input type="text" tabindex="1" placeholder="username" name="" required>
+	  <label>密码</label>
+	  <input type="password" tabindex="2"  name="password" required>
+	  <label>验证码</label>
+	  <div class="row" style="height: 100%;">
+	  		<input type="text" tabindex="1" placeholder="" name="verify" required style="width: 50%;display: inline-block;">
+	 		<div class="row" style="border: 1px solid black;width: 30%;display: inline-block;margin-top:0px;position: absolute;margin-top: 8px;">{:captcha_img()}</div>
+	  </div>
+	  
+	</fieldset>
+	<footer>
+	  <input type="button" class="btnLogin" value="Login" tabindex="4">
+	</footer>
+</form>
+<footer id="main">
+  <a href="https://github.com/hiRainn/tp5-rbac">支持请给个star</a> | <a href="#">code by heihei</a>
+</footer>
+</body>
+<script src="__JS__/behind/jquery.min.js"></script>
+<script src="__LAYER__/layer.js"></script>
+<script type="text/javascript">
+	$(function(){
+		if(typeof window.localStorage.getItem('hostname') == 'string') {
+			$('#remember').attr('checked',true)
+			$("input[name='hostname']").val(window.localStorage.getItem('hostname'));
+			$("input[name='port']").val(window.localStorage.getItem('port'));
+			$("input[name='username']").val(window.localStorage.getItem('username'));
+			$("input[name='password']").val(window.localStorage.getItem('password'));
+		}
+		$('.btnLogin').on('click',function(){
+			var data = {
+				hostname :$("input[name='hostname']").val(),
+				hostport :$("input[name='port']").val()?$("input[name='port']").val():3306,
+				username :$("input[name='username']").val(),
+				password :$("input[name='password']").val(),
+			}
+			var url = "{:url('index/sign/log_in')}";
+			$.post(url,data,function(res){
+				if(res.code != 0) {
+					layer.msg(res.msg);
+					return false;
+				}
+				if(!$('#remember').get(0).checked) {
+					window.localStorage.clear();
+				}
+				else {
+					window.localStorage.setItem('hostname' ,data.hostname);
+					window.localStorage.setItem('port' ,data.hostport);
+					window.localStorage.setItem('username' ,data.username);
+					window.localStorage.setItem('password' ,data.password);
+				}
+				layer.msg('登录成功');
+				location.href="{:url('index/index/index')}"
+			},'json')
+			return false;
+		})
+	})
+</script>
+</html>
