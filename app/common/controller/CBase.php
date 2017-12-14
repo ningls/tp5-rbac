@@ -1,7 +1,7 @@
 <?php
 namespace app\common\controller;
-use \think\Controller;
-use \think\Db;
+use think\Controller;
+use think\Db;
 
 class CBase extends Controller
 {
@@ -20,17 +20,16 @@ class CBase extends Controller
 	*/
 	public function verify()
 	{
-		
+		return captcha();
 	}
 
 	/**
 	* 检查验证码
 	* @param $verify
-	* @return int errorcode
 	*/
-	public function checkVerify(string $verify):int
+	public function checkVerify(string $verify,$id = ''):bool
 	{
-		return 0;
+		return captcha_check($verify)?0:9003;
 	}
 
 	/**

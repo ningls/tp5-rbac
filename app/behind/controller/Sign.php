@@ -42,6 +42,7 @@ class Sign extends Base
                 $admin_user = $request->post('admin_user','','htmlspecialchars');
                 $admin_pass = $request->post('admin_pass','','htmlspecialchars');
                 $verify = $request->post('verify','','htmlspecialchars');
+                return json(['code'=>-1,'msg'=>$this->checkVerify($verify)]);
                 if($code = $this->checkVerify($verify)) {
                     goto login_over;
                 }
@@ -56,7 +57,7 @@ class Sign extends Base
             }
             session('user',$this->admin_user);
             login_over:
-            return json(['code'=>$code,ErrorCode::error[$code]]);
+            return json(['code'=>$code,'msg'=>ErrorCode::error[$code]]);
         }
         elseif($request->isGet()) {
             $this->assign('sms',$this->global_setting['sms_verify']);

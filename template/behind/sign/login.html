@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Login In</title>
+<title>{$system.system_name|default="后台管理"} - 登录</title>
 <meta charset="UTF-8" />
 <meta name="Author" content="heihei">
 <link rel="stylesheet" type="text/css" href="__CSS__/behind/reset.css">
@@ -15,17 +15,20 @@
 	</header>
 	<fieldset class="boxBody" style="width: 100%;">
 	  <label>用户名</label>
-	  <input type="text" tabindex="1" placeholder="username" name="" required>
+	  <input type="text" tabindex="1" placeholder="" name="" required>
 	  <label>密码</label>
 	  <input type="password" tabindex="2"  name="password" required>
 	  <label>验证码</label>
 	  <div class="row" style="height: 100%;">
 	  		<input type="text" tabindex="1" placeholder="" name="verify" required style="width: 50%;display: inline-block;">
-	 		<div class="row" style="border: 1px solid black;width: 30%;display: inline-block;margin-top:0px;position: absolute;margin-top: 8px;">{:captcha_img()}</div>
+	 		<div class="row" style="border: 1px solid black;width: 30%;display: inline-block;margin-top:0px;position: absolute;margin-top: 8px;">
+	 			<img id="verify_img" src="{:url('verify')}" style="width: 100%;">
+	 		</div>
 	  </div>
 	  
 	</fieldset>
 	<footer>
+	  <label><input type="checkbox" id="remember" tabindex="3">remember me</label>
 	  <input type="button" class="btnLogin" value="Login" tabindex="4">
 	</footer>
 </form>
@@ -37,39 +40,41 @@
 <script src="__LAYER__/layer.js"></script>
 <script type="text/javascript">
 	$(function(){
-		if(typeof window.localStorage.getItem('hostname') == 'string') {
+		if(typeof window.localStorage.getItem('admin_user') == 'string') {
 			$('#remember').attr('checked',true)
-			$("input[name='hostname']").val(window.localStorage.getItem('hostname'));
-			$("input[name='port']").val(window.localStorage.getItem('port'));
-			$("input[name='username']").val(window.localStorage.getItem('username'));
-			$("input[name='password']").val(window.localStorage.getItem('password'));
+			$("input[name='admin_user']").val(window.localStorage.getItem('admin_user'));
+			$("input[name='admin_pass']").val(window.localStorage.getItem('admin_pass'));
 		}
 		$('.btnLogin').on('click',function(){
 			var data = {
-				hostname :$("input[name='hostname']").val(),
-				hostport :$("input[name='port']").val()?$("input[name='port']").val():3306,
-				username :$("input[name='username']").val(),
-				password :$("input[name='password']").val(),
+				admin_user :$("input[name='admin_user']").val(),
+				admin_pass :$("input[name='admin_pass']").val(),
+				verify :$("input[name='verify']").val(),			
 			}
-			var url = "{:url('index/sign/log_in')}";
+			var url = "{:url('sign/login')}";
 			$.post(url,data,function(res){
 				if(res.code != 0) {
 					layer.msg(res.msg);
+					$('img').each(function(){
+						$(this).click();
+					})
 					return false;
 				}
 				if(!$('#remember').get(0).checked) {
 					window.localStorage.clear();
 				}
 				else {
-					window.localStorage.setItem('hostname' ,data.hostname);
-					window.localStorage.setItem('port' ,data.hostport);
-					window.localStorage.setItem('username' ,data.username);
-					window.localStorage.setItem('password' ,data.password);
+					window.localStorage.setItem('admin_user' ,data.admin_user);
+					window.localStorage.setItem('admin_pass' ,data.admin_pass);
 				}
 				layer.msg('登录成功');
-				location.href="{:url('index/index/index')}"
+				location.href="{:url('index/index')}"
 			},'json')
 			return false;
+		})
+
+		$('img').on('click',function(){
+			$(this).attr('src','/captcha?id='+Date.parse(new Date())/1000);
 		})
 	})
 </script>
